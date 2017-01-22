@@ -327,9 +327,18 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			}
 		}
 		//判断是否分配给当前节点
-		zkPath = zkPath + "/" + uuid;
-		if(this.getZooKeeper().exists(zkPath,false) != null){
-			isOwner = true;
+		if(this.getZooKeeper().exists(zkPath + "/" + uuid, false) != null){
+			//是否手动停止
+			byte[] data = this.getZooKeeper().getData(zkPath, null, null);
+			if (null != data) {
+				 String json = new String(data);
+				 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
+				 if(!taskDefine.isStop()){
+					 isOwner = true;
+				 }
+			}else{
+				isOwner = true;
+			}
 		}
 		return isOwner;
 	}
@@ -377,6 +386,29 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	}
 	
 	@Override
+	public void updateTask(TaskDefine taskDefine) throws Exception {
+		String zkPath = this.pathTask;
+		zkPath = zkPath + "/" + taskDefine.stringKey();
+		if(this.getZooKeeper().exists(zkPath, false) == null){
+			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+			String json = this.gson.toJson(taskDefine);
+			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
+		}else{
+			byte[] data = this.getZooKeeper().getData(zkPath, null, null);
+			TaskDefine tmpTaskDefine = null;
+			if (null != data) {
+				 String json = new String(data);
+				 tmpTaskDefine = this.gson.fromJson(json, TaskDefine.class);
+			}else{
+				tmpTaskDefine = new TaskDefine();
+			}
+			tmpTaskDefine.valueOf(taskDefine);
+			String json = this.gson.toJson(tmpTaskDefine);
+			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
+		}
+	}
+	
+	@Override
 	public void delTask(String targetBean, String targetMethod) throws Exception {
 		String zkPath = this.pathTask;
 		if(this.getZooKeeper().exists(zkPath,false) != null){
@@ -398,7 +430,6 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 	}
 	
-	
 	@Override
 	public List<TaskDefine> selectTask() throws Exception {
 		String zkPath = this.pathTask;
@@ -411,17 +442,15 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				if (null != data) {
 					 String json = new String(data);
 					 taskDefine = this.gson.fromJson(json, TaskDefine.class);
-					 taskDefine.setType("uncode task");
 				}else{
-					String[] names = child.split("#");
-					if(StringUtils.isNotEmpty(names[0])){
-						taskDefine = new TaskDefine();
-						taskDefine.setTargetBean(names[0]);
-						taskDefine.setTargetMethod(names[1]);
-						taskDefine.setType("quartz/spring task");
-					}
+					taskDefine = new TaskDefine();
+					taskDefine.setType(TaskDefine.TYPE_OTHER_TASK);
 				}
-
+				String[] names = child.split("#");
+				if(StringUtils.isNotEmpty(names[0])){
+					taskDefine.setTargetBean(names[0]);
+					taskDefine.setTargetMethod(names[1]);
+				}
 				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
 				if(taskDefine != null && sers != null && sers.size() > 0){
 					taskDefine.setCurrentServer(sers.get(0));

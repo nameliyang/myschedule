@@ -155,6 +155,7 @@ public class ManagerServlet extends HttpServlet{
 			"\t 						<th>开始时间</th>\n"+
 			"\t 						<th>周期（秒）</th>\n"+
 			"\t 						<th>执行节点</th>\n"+
+			"\t 						<th>运行状态</th>\n"+
 			"\t 						<th>执行次数</th>\n"+
 			"\t 						<th>最近执行时间</th>\n"+
 			"\t 						<th>操作</th>\n"+
@@ -173,6 +174,8 @@ public class ManagerServlet extends HttpServlet{
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String del = request.getParameter("del");
+		String start = request.getParameter("start");
+		String stop = request.getParameter("stop");
 		String bean = request.getParameter("bean");
 		String method = request.getParameter("method");
 		if(StringUtils.isNotEmpty(del)){
@@ -182,10 +185,27 @@ public class ManagerServlet extends HttpServlet{
 			taskDefine.setTargetMethod(dels[1]);
 			ConsoleManager.delScheduleTask(taskDefine);
 			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+		}else if(StringUtils.isNotEmpty(start)){
+			TaskDefine taskDefine = new TaskDefine();
+			String[] dels = start.split("_");
+			taskDefine.setTargetBean(dels[0]);
+			taskDefine.setTargetMethod(dels[1]);
+			taskDefine.setStatus(TaskDefine.STATUS_RUNNING);
+			ConsoleManager.updateScheduleTask(taskDefine);
+			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+		}else if(StringUtils.isNotEmpty(stop)){
+			TaskDefine taskDefine = new TaskDefine();
+			String[] dels = stop.split("_");
+			taskDefine.setTargetBean(dels[0]);
+			taskDefine.setTargetMethod(dels[1]);
+			taskDefine.setStatus(TaskDefine.STATUS_STOP);
+			ConsoleManager.updateScheduleTask(taskDefine);
+			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
 		}else if(StringUtils.isNotEmpty(bean) && StringUtils.isNotEmpty(method)){
 			TaskDefine taskDefine = new TaskDefine();
 			taskDefine.setTargetBean(bean);
 			taskDefine.setTargetMethod(method);
+			taskDefine.setType(TaskDefine.TYPE_UNCODE_TASK);
 			String cronExpression = request.getParameter("cronExpression");
 			if(StringUtils.isNotEmpty(cronExpression)){
 				taskDefine.setCronExpression(cronExpression);
@@ -240,6 +260,7 @@ public class ManagerServlet extends HttpServlet{
 	    			  .append("<td>").append(taskDefine.getStartTime()).append("</td>")
 	    			  .append("<td>").append(taskDefine.getPeriod()).append("</td>")
 	    			  .append("<td>").append(taskDefine.getCurrentServer()).append("</td>")
+	    			  .append("<td>").append(taskDefine.getStatus()).append("</td>")
 	    			  .append("<td>").append(taskDefine.getRunTimes()).append("</td>");
 	    			if(taskDefine.getLastRunningTime() > 0){
 	    				Date date = new Date(taskDefine.getLastRunningTime());
@@ -247,7 +268,23 @@ public class ManagerServlet extends HttpServlet{
 	    			}else{
 	    				sbTask.append("<td>").append("-").append("</td>");
 	    			}
-	    			sbTask.append("<td>").append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+	    			sbTask.append("<td>");
+	    			if(taskDefine.isStop()){
+	    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+		  				 .append("/uncode/schedule?start=")
+		                 .append(taskDefine.getTargetBean())
+		                 .append("_")
+		                 .append(taskDefine.getTargetMethod())
+		                 .append("\" style=\"color:green\">运行</a>");
+	    			}else{
+	    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+		  				 .append("/uncode/schedule?stop=")
+		                 .append(taskDefine.getTargetBean())
+		                 .append("_")
+		                 .append(taskDefine.getTargetMethod())
+		                 .append("\" style=\"color:red\">停止</a>");
+	    			}
+	    			sbTask.append(" <a href=\"").append(request.getSession().getServletContext().getContextPath())
 	    			  				 .append("/uncode/schedule?del=")
 	    			                 .append(taskDefine.getTargetBean())
 	    			                 .append("_")

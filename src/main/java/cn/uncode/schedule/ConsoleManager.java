@@ -43,6 +43,14 @@ public class ConsoleManager {
 		}
     }
     
+    public static void updateScheduleTask(TaskDefine taskDefine) {
+        try {
+			ConsoleManager.scheduleManager.getScheduleDataManager().updateTask(taskDefine);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+    }
+    
     public static List<TaskDefine> queryScheduleTask() {
     	List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
         try {

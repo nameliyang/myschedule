@@ -405,6 +405,31 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		return ZKScheduleManager.applicationcontext;
 	}
 	
+	public void destroy() {
+		try {
+			if (this.initialThread != null) {
+				this.initialThread.stopThread();
+			}
+
+			if (this.scheduleDataManager != null) {
+				this.scheduleDataManager.clearExpireScheduleServer();
+			}
+			if (this.hearBeatTimer != null) {
+				this.hearBeatTimer.cancel();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (this.zkManager != null) {
+				try {
+					this.zkManager.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	
 
 

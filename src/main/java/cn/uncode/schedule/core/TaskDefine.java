@@ -2,12 +2,21 @@ package cn.uncode.schedule.core;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * 任务定义，提供关键信息给使用者
  * @author juny.ye
  *
  */
 public class TaskDefine {
+	
+	public static final String TYPE_UNCODE_TASK = "uncode-task";
+	public static final String TYPE_OTHER_TASK = "quartz/spring-task";
+	
+	public static final String STATUS_ERROR = "error";
+	public static final String STATUS_STOP = "stop";
+	public static final String STATUS_RUNNING = "running";
 	
     /**
      * 目标bean
@@ -46,9 +55,20 @@ public class TaskDefine {
 	 */
 	private String type;
 	
+	/**
+	 * 后台显示参数，无业务内含
+	 */
 	private int runTimes;
 	
+	/**
+	 * 后台显示参数，无业务内含
+	 */
 	private long lastRunningTime;
+	
+	/**
+	 * 后台显示参数，无业务内含
+	 */
+	private String status = STATUS_RUNNING;
 	
 	public boolean begin(Date sysTime) {
 		return null != sysTime && sysTime.after(startTime);
@@ -137,6 +157,51 @@ public class TaskDefine {
 	public void setLastRunningTime(long lastRunningTime) {
 		this.lastRunningTime = lastRunningTime;
 	}
+
+	public boolean isStop() {
+		return STATUS_STOP.equals(this.status);
+	}
+
+	public void setStop() {
+		this.status = STATUS_STOP;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	public void valueOf(TaskDefine taskDefine){
+		if(StringUtils.isNotBlank(taskDefine.getTargetBean())){
+			this.targetBean = taskDefine.getTargetBean();
+		}
+		if(StringUtils.isNotBlank(taskDefine.getTargetMethod())){
+			this.targetMethod = taskDefine.getTargetBean();
+		}
+		if(StringUtils.isNotBlank(taskDefine.getCronExpression())){
+			this.cronExpression = taskDefine.getCronExpression();
+		}
+		if(startTime != null){
+			this.startTime = taskDefine.getStartTime();
+		}
+		this.period = taskDefine.getPeriod();
+		if(StringUtils.isNotBlank(taskDefine.getParams())){
+			this.params = taskDefine.getParams();
+		}
+		if(StringUtils.isNotBlank(taskDefine.getType())){
+			this.type = taskDefine.getType();
+		}
+		if(StringUtils.isNotBlank(taskDefine.getStatus())){
+			this.status = taskDefine.getStatus();
+		}
+	}
+
+
+	
+	
 	
 	
 }

@@ -43,6 +43,13 @@ public class SimpleTask {
         System.out.println("=========== end !=========");
     }
     
+    
+    public void print5(String param) {
+        System.out.println("===========start!=========");
+        System.out.println("print4:"+i+"-"+param);i++;
+        System.out.println("=========== end !=========");
+    }
+    
 
 
 }
