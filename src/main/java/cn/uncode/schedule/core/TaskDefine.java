@@ -179,7 +179,7 @@ public class TaskDefine {
 			this.targetBean = taskDefine.getTargetBean();
 		}
 		if(StringUtils.isNotBlank(taskDefine.getTargetMethod())){
-			this.targetMethod = taskDefine.getTargetBean();
+			this.targetMethod = taskDefine.getTargetMethod();
 		}
 		if(StringUtils.isNotBlank(taskDefine.getCronExpression())){
 			this.cronExpression = taskDefine.getCronExpression();
