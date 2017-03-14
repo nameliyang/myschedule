@@ -239,6 +239,7 @@ ConsoleManager.queryScheduleTask();
 
 - [快速递](http://www.ksudi.com)
 - [优酷](http://www.youku.com/)
+- [好快科技](http://www.mydrivers.com/)
 - [更多](https://git.oschina.net/uncode/uncode-schedule/issues/3)
 	
 ------------------------------------------------------------------------
