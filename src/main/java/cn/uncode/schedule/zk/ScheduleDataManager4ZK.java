@@ -317,7 +317,11 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		//查看集群中是否注册当前任务，如果没有就自动注册
 		String zkPath = this.pathTask + "/" + name;
 		if(this.zkManager.isAutoRegisterTask()){
+			
 			if(this.getZooKeeper().exists(zkPath,false) == null){
+				if (this.getZooKeeper().exists(this.pathTask, false) == null) {
+					ZKTools.createPath(getZooKeeper(),this.pathTask, CreateMode.PERSISTENT, this.zkManager.getAcl());
+				}
 				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
 				if(LOG.isDebugEnabled()){
 					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");

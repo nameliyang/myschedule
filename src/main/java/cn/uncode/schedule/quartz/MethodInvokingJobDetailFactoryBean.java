@@ -149,7 +149,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	/**
 	 * Specify whether or not multiple jobs should be run in a concurrent
 	 * fashion. The behavior when one does not want concurrent jobs to be
-	 * executed is realized through adding the {@link StatefulJob} interface.
+	 * executed is realized through adding the interface.
 	 * More information on stateful versus stateless jobs can be found
 	 * <a href="http://www.quartz-scheduler.org/documentation/quartz-2.1.x/tutorials/tutorial-lesson-03">here</a>.
 	 * <p>The default setting is to run jobs concurrently.
