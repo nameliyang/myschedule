@@ -43,6 +43,14 @@ public class ConsoleManager {
 		}
     }
     
+    public static void delScheduleTask(String targetBean, String targetMethod) {
+        try {
+			ConsoleManager.scheduleManager.getScheduleDataManager().delTask(targetBean, targetMethod);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+    }
+    
     public static void updateScheduleTask(TaskDefine taskDefine) {
         try {
 			ConsoleManager.scheduleManager.getScheduleDataManager().updateTask(taskDefine);

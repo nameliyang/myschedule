@@ -332,19 +332,27 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		//判断是否分配给当前节点
 		if(this.getZooKeeper().exists(zkPath + "/" + uuid, false) != null){
-			//是否手动停止
-			byte[] data = this.getZooKeeper().getData(zkPath, null, null);
-			if (null != data) {
-				 String json = new String(data);
-				 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
-				 if(!taskDefine.isStop()){
-					 isOwner = true;
-				 }
-			}else{
-				isOwner = true;
-			}
+			isOwner = true;
 		}
 		return isOwner;
+	}
+	
+	
+	@Override
+	public boolean isRunning(String name) throws Exception {
+		boolean isRunning = true;
+		//查看集群中是否注册当前任务，如果没有就自动注册
+		String zkPath = this.pathTask + "/" + name;
+		//是否手动停止
+		byte[] data = this.getZooKeeper().getData(zkPath, null, null);
+		if (null != data) {
+			 String json = new String(data);
+			 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
+			 if(!taskDefine.isStop()){
+				 isRunning = false;
+			 }
+		}
+		return isRunning;
 	}
 	
 	@Override
@@ -448,7 +456,6 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 					 taskDefine = this.gson.fromJson(json, TaskDefine.class);
 				}else{
 					taskDefine = new TaskDefine();
-					taskDefine.setType(TaskDefine.TYPE_OTHER_TASK);
 				}
 				String[] names = child.split("#");
 				if(StringUtils.isNotEmpty(names[0])){

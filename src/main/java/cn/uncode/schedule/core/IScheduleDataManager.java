@@ -41,6 +41,8 @@ public interface IScheduleDataManager{
 	
 	public boolean isOwner(String name, String uuid)throws Exception;
 	
+	public boolean isRunning(String name)throws Exception;
+	
 	public void addTask(TaskDefine taskDefine)throws Exception;
 	
 	public void updateTask(TaskDefine taskDefine)throws Exception;
@@ -51,7 +53,6 @@ public interface IScheduleDataManager{
 	 * @param targetMethod
 	 * @throws Exception
 	 */
-	@Deprecated
 	public void delTask(String targetBean, String targetMethod)throws Exception;
 	
 	public void delTask(TaskDefine taskDefine) throws Exception;

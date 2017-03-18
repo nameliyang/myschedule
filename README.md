@@ -73,7 +73,11 @@ ConsoleManager.addScheduleTask(TaskDefine taskDefine);
 
 ConsoleManager.delScheduleTask(String targetBean, String targetMethod);
 
-3 查询任务列表
+3 动态更新任务
+
+ConsoleManager.updateScheduleTask(TaskDefine taskDefine);
+
+4 查询任务列表
 
 ConsoleManager.queryScheduleTask();
 

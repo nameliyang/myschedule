@@ -123,7 +123,12 @@ public class TaskDefine {
 	}
 	
 	public String stringKey(){
-		return getTargetBean() + "#" + getTargetMethod();
+		String result = null;
+		boolean notBlank = StringUtils.isNotBlank(getTargetBean()) && StringUtils.isNotBlank(getTargetMethod());
+		if(notBlank){
+			result = getTargetBean() + "#" + getTargetMethod();
+		}
+		return result;
 	}
 
 	public String getParams() {

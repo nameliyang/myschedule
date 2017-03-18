@@ -23,7 +23,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import cn.uncode.schedule.core.IScheduleDataManager;
 import cn.uncode.schedule.core.ScheduleServer;
 import cn.uncode.schedule.core.ScheduledMethodRunnable;
-import cn.uncode.schedule.util.ScheduleUtil;
+import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.zk.ScheduleDataManager4ZK;
 import cn.uncode.schedule.zk.ZKManager;
 
@@ -244,18 +244,11 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private Runnable taskWrapper(final Runnable task){
 		return new Runnable(){
 			public void run(){
-				Method targetMethod = null;
-				if(task instanceof ScheduledMethodRunnable){
-					ScheduledMethodRunnable uncodeScheduledMethodRunnable = (ScheduledMethodRunnable)task;
-					targetMethod = uncodeScheduledMethodRunnable.getMethod();
-				}else{
-					org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
-					targetMethod = springScheduledMethodRunnable.getMethod();
-				}
-		    	String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
-		    	if(null != beanNames && StringUtils.isNotEmpty(beanNames[0])){
-		    		String name = ScheduleUtil.getTaskNameFormBean(beanNames[0], targetMethod.getName());
+				TaskDefine taskDefine = resolveTaskName(task);
+				String name = taskDefine.stringKey();
+		    	if(StringUtils.isNotEmpty(name)){
 		    		boolean isOwner = false;
+		    		boolean isRunning = true;
 					try {
 						if(!isScheduleServerRegister){
 							Thread.sleep(1000);
@@ -263,13 +256,14 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 						if(zkManager.checkZookeeperState()){
 							isOwner = scheduleDataManager.isOwner(name, currenScheduleServer.getUuid());
 							isOwnerMap.put(name, isOwner);
+							isRunning = scheduleDataManager.isRunning(name);
 						}else{
 							// 如果zk不可用，使用历史数据
 							if(null != isOwnerMap){
 								isOwner = isOwnerMap.get(name);
 							}
 						}
-						if(isOwner){
+						if(isOwner && isRunning){
 			    			task.run();
 			    			scheduleDataManager.saveRunningInfo(name, currenScheduleServer.getUuid());
 			    			LOGGER.info("Cron job has been executed.");
@@ -280,6 +274,26 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		    	}
 			}
 		};
+	}
+	
+	private TaskDefine resolveTaskName(final Runnable task) {
+		Method targetMethod = null;
+		TaskDefine taskDefine = new TaskDefine();
+		if(task instanceof ScheduledMethodRunnable){
+			ScheduledMethodRunnable uncodeScheduledMethodRunnable = (ScheduledMethodRunnable)task;
+			targetMethod = uncodeScheduledMethodRunnable.getMethod();
+			taskDefine.setType(TaskDefine.TYPE_UNCODE_TASK);
+		}else{
+			org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
+			targetMethod = springScheduledMethodRunnable.getMethod();
+			taskDefine.setType(TaskDefine.TYPE_OTHER_TASK);
+		}
+		String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
+    	if(null != beanNames && StringUtils.isNotEmpty(beanNames[0])){
+    		taskDefine.setTargetBean(beanNames[0]);
+    		taskDefine.setTargetMethod(targetMethod.getName());
+    	}
+		return taskDefine;
 	}
 
 	class HeartBeatTimerTask extends java.util.TimerTask {
@@ -367,26 +381,81 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	
 	@Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long period) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			taskDefine.setPeriod(period);
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
         return super.scheduleAtFixedRate(taskWrapper(task), period);
     }
 	
 	public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			String cronEx = trigger.toString();
+			int index = cronEx.indexOf(":");
+			if(index >= 0){
+				cronEx = cronEx.substring(index + 1);
+				taskDefine.setCronExpression(cronEx);
+			}
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
 		return super.schedule(taskWrapper(task), trigger);
 	}
 
 	public ScheduledFuture<?> schedule(Runnable task, Date startTime) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			taskDefine.setStartTime(startTime);
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
 		return super.schedule(taskWrapper(task), startTime);
 	}
 
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Date startTime, long period) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			taskDefine.setStartTime(startTime);
+			taskDefine.setPeriod(period);
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
 		return super.scheduleAtFixedRate(taskWrapper(task), startTime, period);
 	}
 
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Date startTime, long delay) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			taskDefine.setStartTime(startTime);
+			taskDefine.setPeriod(delay);
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
 		return super.scheduleWithFixedDelay(taskWrapper(task), startTime, delay);
 	}
 
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
+		try {
+			TaskDefine taskDefine = resolveTaskName(task);
+			taskDefine.setPeriod(delay);
+			scheduleDataManager.updateTask(taskDefine);
+			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
+		} catch (Exception e) {
+			LOGGER.error("update task error", e);
+		}
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
 	}
 	
