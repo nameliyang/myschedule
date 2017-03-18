@@ -5,18 +5,17 @@
 
 # 功能概述
 
-1. 基于zookeeper+spring task/quartz的分布任务调度系统。
+1. 基于zookeeper+spring task/quartz/uncode task的分布任务调度系统。
 2. 确保每个任务在集群中不同节点上不重复的执行。
 3. 单个任务节点故障时自动转移到其他任务节点继续执行。
 4. 任务节点启动时必须保证zookeeper可用，任务节点运行期zookeeper集群不可用时任务节点保持可用前状态运行，zookeeper集群恢复正常运期。
-5. 支持动态添加和删除任务。
+5. 支持动态添加、修改和删除任务，支持任务暂停和重新启动。
 6. 添加ip黑名单，过滤不需要执行任务的节点。
-7. 简单管理后台
+7. 后台管理和任务执行监控。
 
 
 说明：
 * 单节点故障时需要业务保障数据完整性或幂等性
-* 具体使用方式和spring task相同k
 
 
 ------------------------------------------------------------------------
@@ -32,9 +31,10 @@
 
 # Uncode-Schedule
 
-## Spring bean
+## 编写Spring bean
 
-	public class SimpleTask {
+        @Component	
+        public class SimpleTask {
 
 		private static int i = 0;
 		
@@ -62,8 +62,10 @@
 			   </map>
 		</property>
 	</bean>
+        <!-- Spring定时器注解开关-->
+        <task:scheduled-tasks scheduler="zkScheduleManager" />
 	
-## API
+## 使用API或后台添加任务
 
 1 动态添加任务
 
@@ -147,9 +149,9 @@ ConsoleManager.queryScheduleTask();
 2 xml配置
 
 	<!-- 配置注解扫描 -->
-    <context:annotation-config />
+        <context:annotation-config />
 	<!-- 自动扫描的包名 -->
-    <context:component-scan base-package="cn.uncode.schedule" />
+        <context:component-scan base-package="cn.uncode.schedule" />
 	<!-- 分布式任务管理器 -->
 	<bean id="zkScheduleManager" class="cn.uncode.schedule.ZKScheduleManager"
 		init-method="init">
@@ -210,7 +212,7 @@ ConsoleManager.queryScheduleTask();
 		</property>
 	</bean>
 	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
-	<bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean id="startQuertz" lazy-init="false" autowire="no"                           class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="doTime"/>
