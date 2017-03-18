@@ -82,8 +82,10 @@ public class DynamicTaskManager {
 					}else if(period > 0){
 						scheduledFuture = ConsoleManager.getScheduleManager().scheduleAtFixedRate(scheduledMethodRunnable, period);
 					}
-					SCHEDULE_FUTURES.put(scheduleKey, scheduledFuture);
-					LOGGER.debug("Building new schedule task, target bean "+ targetBean + " target method " + targetMethod + ".");
+					if(null != scheduledFuture){
+						SCHEDULE_FUTURES.put(scheduleKey, scheduledFuture);
+						LOGGER.debug("Building new schedule task, target bean "+ targetBean + " target method " + targetMethod + ".");
+					}
 				}
 			}else{
 				LOGGER.debug("Bean name is not exists.");
