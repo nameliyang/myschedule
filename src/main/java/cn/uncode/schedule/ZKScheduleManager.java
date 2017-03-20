@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -41,6 +43,8 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private static final long serialVersionUID = 1L;
 
 	private static final transient Logger LOGGER = LoggerFactory.getLogger(ZKScheduleManager.class);
+	
+	private final CountDownLatch downLatch = new CountDownLatch(1);
 
 	private Map<String, String> zkConfig;
 	
@@ -230,6 +234,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public void initialData() throws Exception {
 		this.zkManager.initial();
 		this.scheduleDataManager = new ScheduleDataManager4ZK(this.zkManager);
+		checkScheduleDataManager();
 		if (this.start) {
 			// 注册调度管理器
 			this.scheduleDataManager.registerScheduleServer(this.currenScheduleServer);
@@ -384,6 +389,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setPeriod(period);
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
@@ -401,6 +407,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 				cronEx = cronEx.substring(index + 1);
 				taskDefine.setCronExpression(cronEx);
 			}
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
@@ -413,6 +420,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
@@ -421,11 +429,20 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		return super.schedule(taskWrapper(task), startTime);
 	}
 
+	private void checkScheduleDataManager() throws InterruptedException {
+		if(scheduleDataManager == null){
+			downLatch.await(1000, TimeUnit.MILLISECONDS);
+		}else{
+			downLatch.countDown();
+		}
+	}
+
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Date startTime, long period) {
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
 			taskDefine.setPeriod(period);
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
@@ -439,6 +456,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
 			taskDefine.setPeriod(delay);
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
@@ -451,6 +469,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setPeriod(delay);
+			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
