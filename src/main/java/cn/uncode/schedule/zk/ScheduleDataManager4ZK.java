@@ -348,7 +348,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		if (null != data) {
 			 String json = new String(data);
 			 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
-			 if(!taskDefine.isStop()){
+			 if(taskDefine.isStop()){
 				 isRunning = false;
 			 }
 		}
