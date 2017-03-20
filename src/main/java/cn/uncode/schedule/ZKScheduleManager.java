@@ -384,7 +384,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setPeriod(period);
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);
@@ -401,7 +401,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 				cronEx = cronEx.substring(index + 1);
 				taskDefine.setCronExpression(cronEx);
 			}
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);
@@ -413,7 +413,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);
@@ -426,7 +426,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
 			taskDefine.setPeriod(period);
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);
@@ -439,7 +439,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setStartTime(startTime);
 			taskDefine.setPeriod(delay);
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);
@@ -451,7 +451,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			TaskDefine taskDefine = resolveTaskName(task);
 			taskDefine.setPeriod(delay);
-			scheduleDataManager.updateTask(taskDefine);
+			scheduleDataManager.addTask(taskDefine);
 			LOGGER.debug(currenScheduleServer.getUuid() +":自动向集群注册任务[" + taskDefine.stringKey() + "]");
 		} catch (Exception e) {
 			LOGGER.error("update task error", e);

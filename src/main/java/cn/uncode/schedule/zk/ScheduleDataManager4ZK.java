@@ -393,8 +393,11 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		if(this.getZooKeeper().exists(zkPath, false) == null){
 			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		}
-		String json = this.gson.toJson(taskDefine);
-		this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
+		byte[] data = this.getZooKeeper().getData(zkPath, null, null);
+		if(null == data || data.length == 0){
+			String json = this.gson.toJson(taskDefine);
+			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
+		}
 	}
 	
 	@Override
