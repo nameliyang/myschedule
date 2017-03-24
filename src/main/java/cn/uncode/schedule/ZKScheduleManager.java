@@ -405,7 +405,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			int index = cronEx.indexOf(":");
 			if(index >= 0){
 				cronEx = cronEx.substring(index + 1);
-				taskDefine.setCronExpression(cronEx);
+				taskDefine.setCronExpression(cronEx.trim());
 			}
 			checkScheduleDataManager();
 			scheduleDataManager.addTask(taskDefine);

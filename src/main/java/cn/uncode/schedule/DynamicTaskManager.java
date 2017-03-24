@@ -66,29 +66,30 @@ public class DynamicTaskManager {
 	public static void scheduleTask(String targetBean, String targetMethod, String cronExpression, Date startTime, long period, String params){
 		String scheduleKey = buildScheduleKey(targetBean, targetMethod);
 		try {
-			ScheduledFuture<?> scheduledFuture = null;
-			ScheduledMethodRunnable scheduledMethodRunnable = buildScheduledRunnable(targetBean, targetMethod, params);
-			if(scheduledMethodRunnable != null){
-				if (!SCHEDULE_FUTURES.containsKey(scheduleKey)) {
-					if(StringUtils.isNotEmpty(cronExpression)){
-						Trigger trigger = new CronTrigger(cronExpression);
-						scheduledFuture = ConsoleManager.getScheduleManager().schedule(scheduledMethodRunnable, trigger);
-					}else if(startTime != null){
-						if(period > 0){
-							scheduledFuture = ConsoleManager.getScheduleManager().scheduleAtFixedRate(scheduledMethodRunnable, startTime, period);
-						}else{
-							scheduledFuture = ConsoleManager.getScheduleManager().schedule(scheduledMethodRunnable, startTime);
+			if (!SCHEDULE_FUTURES.containsKey(scheduleKey)) {
+				ScheduledFuture<?> scheduledFuture = null;
+				ScheduledMethodRunnable scheduledMethodRunnable = buildScheduledRunnable(targetBean, targetMethod, params);
+				if(scheduledMethodRunnable != null){
+					
+						if(StringUtils.isNotEmpty(cronExpression)){
+							Trigger trigger = new CronTrigger(cronExpression);
+							scheduledFuture = ConsoleManager.getScheduleManager().schedule(scheduledMethodRunnable, trigger);
+						}else if(startTime != null){
+							if(period > 0){
+								scheduledFuture = ConsoleManager.getScheduleManager().scheduleAtFixedRate(scheduledMethodRunnable, startTime, period);
+							}else{
+								scheduledFuture = ConsoleManager.getScheduleManager().schedule(scheduledMethodRunnable, startTime);
+							}
+						}else if(period > 0){
+							scheduledFuture = ConsoleManager.getScheduleManager().scheduleAtFixedRate(scheduledMethodRunnable, period);
 						}
-					}else if(period > 0){
-						scheduledFuture = ConsoleManager.getScheduleManager().scheduleAtFixedRate(scheduledMethodRunnable, period);
-					}
-					if(null != scheduledFuture){
-						SCHEDULE_FUTURES.put(scheduleKey, scheduledFuture);
-						LOGGER.debug("Building new schedule task, target bean "+ targetBean + " target method " + targetMethod + ".");
-					}
+						if(null != scheduledFuture){
+							SCHEDULE_FUTURES.put(scheduleKey, scheduledFuture);
+							LOGGER.debug("Building new schedule task, target bean "+ targetBean + " target method " + targetMethod + ".");
+						}
+				}else{
+					LOGGER.debug("Bean name is not exists.");
 				}
-			}else{
-				LOGGER.debug("Bean name is not exists.");
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

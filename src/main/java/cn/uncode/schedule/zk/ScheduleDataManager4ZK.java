@@ -497,7 +497,9 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 							 String json = new String(data);
 							 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
 							 ownerTask.add(taskName);
-							 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
+							 if(TaskDefine.TYPE_UNCODE_TASK.equals(taskDefine.getType())){
+								 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
+							 }
 						 }
 					 }
 				 }
