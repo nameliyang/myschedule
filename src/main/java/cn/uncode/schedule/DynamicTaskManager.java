@@ -19,6 +19,7 @@ import org.springframework.util.ReflectionUtils;
 
 import cn.uncode.schedule.core.ScheduledMethodRunnable;
 import cn.uncode.schedule.core.TaskDefine;
+import cn.uncode.schedule.util.ScheduleUtil;
 
 
 
@@ -37,7 +38,7 @@ public class DynamicTaskManager {
 	 */
 	public static void scheduleTask(TaskDefine taskDefine, Date currentTime){
 		scheduleTask(taskDefine.getTargetBean(), taskDefine.getTargetMethod(),
-				taskDefine.getCronExpression(), taskDefine.getStartTime(), taskDefine.getPeriod(), taskDefine.getParams());
+				taskDefine.getCronExpression(), taskDefine.getStartTime(), taskDefine.getPeriod(), taskDefine.getParams(), taskDefine.getExtKeySuffix());
 	}
 	
 	public static void clearLocalTask(List<String> existsTaskName){
@@ -63,8 +64,8 @@ public class DynamicTaskManager {
 	 * @param startTime
 	 * @param period
 	 */
-	public static void scheduleTask(String targetBean, String targetMethod, String cronExpression, Date startTime, long period, String params){
-		String scheduleKey = buildScheduleKey(targetBean, targetMethod);
+	public static void scheduleTask(String targetBean, String targetMethod, String cronExpression, Date startTime, long period, String params, String keySuffix){
+		String scheduleKey = ScheduleUtil.buildScheduleKey(targetBean, targetMethod, keySuffix);
 		try {
 			if (!SCHEDULE_FUTURES.containsKey(scheduleKey)) {
 				ScheduledFuture<?> scheduledFuture = null;
@@ -94,11 +95,6 @@ public class DynamicTaskManager {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
-	}
-	
-	
-	private static String buildScheduleKey(String targetBean, String targetMethod){
-		return targetBean + "#" + targetMethod;
 	}
 	
 	/**

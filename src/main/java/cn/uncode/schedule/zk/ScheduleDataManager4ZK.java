@@ -423,6 +423,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 	}
 	
+	@Deprecated
 	@Override
 	public void delTask(String targetBean, String targetMethod) throws Exception {
 		String zkPath = this.pathTask;

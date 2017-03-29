@@ -53,6 +53,7 @@ public interface IScheduleDataManager{
 	 * @param targetMethod
 	 * @throws Exception
 	 */
+	@Deprecated
 	public void delTask(String targetBean, String targetMethod)throws Exception;
 	
 	public void delTask(TaskDefine taskDefine) throws Exception;

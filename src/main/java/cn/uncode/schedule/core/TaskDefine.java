@@ -71,6 +71,11 @@ public class TaskDefine {
 	 */
 	private String status = STATUS_RUNNING;
 	
+	/**
+	 * key的后缀
+	 */
+	private String extKeySuffix;
+	
 	public boolean begin(Date sysTime) {
 		return null != sysTime && sysTime.after(startTime);
 	}
@@ -129,6 +134,9 @@ public class TaskDefine {
 		if(notBlank){
 			result = getTargetBean() + "#" + getTargetMethod();
 		}
+		if(StringUtils.isNotBlank(extKeySuffix)){
+			result += "-" + extKeySuffix;
+		}
 		return result;
 	}
 
@@ -179,7 +187,15 @@ public class TaskDefine {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
+	public String getExtKeySuffix() {
+		return extKeySuffix;
+	}
+
+	public void setExtKeySuffix(String extKeySuffix) {
+		this.extKeySuffix = extKeySuffix;
+	}
+
 	public void valueOf(TaskDefine taskDefine){
 		if(StringUtils.isNotBlank(taskDefine.getTargetBean())){
 			this.targetBean = taskDefine.getTargetBean();
@@ -202,6 +218,9 @@ public class TaskDefine {
 		}
 		if(StringUtils.isNotBlank(taskDefine.getStatus())){
 			this.status = taskDefine.getStatus();
+		}
+		if(StringUtils.isNotBlank(taskDefine.getExtKeySuffix())){
+			this.extKeySuffix = taskDefine.getExtKeySuffix();
 		}
 	}
 

@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * 调度处理工具类
@@ -109,8 +111,17 @@ public class ScheduleUtil {
          }
     }
     
-    public static String getTaskNameFormBean(String beanName, String methodName){
-    	return beanName + "#" + methodName;
+    public static String buildScheduleKey(String beanName, String methodName, String extKeySuffix){
+    	String result = beanName + "#" + methodName;
+    	if(StringUtils.isNotBlank(extKeySuffix)){
+    		result += "-" + extKeySuffix;
+    	}
+    	return result;
+    }
+    
+    
+    public static String buildScheduleKey(String beanName, String methodName){
+    	return buildScheduleKey(beanName, methodName, null);
     }
     
     /**
