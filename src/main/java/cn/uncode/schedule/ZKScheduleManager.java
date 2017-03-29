@@ -28,6 +28,7 @@ import cn.uncode.schedule.core.ScheduledMethodRunnable;
 import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.zk.ScheduleDataManager4ZK;
 import cn.uncode.schedule.zk.ZKManager;
+import cn.uncode.schedule.zk.ZKManager.keys;
 
 /**
  * 调度器核心管理
@@ -291,7 +292,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}else{
 			org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
 			targetMethod = springScheduledMethodRunnable.getMethod();
-			taskDefine.setType(TaskDefine.TYPE_OTHER_TASK);
+			taskDefine.setType(TaskDefine.TYPE_SPRING_TASK);
 		}
 		String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
     	if(null != beanNames && StringUtils.isNotEmpty(beanNames[0])){
@@ -476,6 +477,18 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			LOGGER.error("update task error", e);
 		}
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
+	}
+	
+	public boolean checkAdminUser(String account, String password){
+		if(StringUtils.isBlank(account) || StringUtils.isBlank(password)){
+			return false;
+		}
+		String name = zkConfig.get(ZKManager.keys.userName.toString());
+		String pwd = zkConfig.get(ZKManager.keys.password.toString());
+		if(account.equals(name) && password.equals(pwd)){
+			return true;
+		}
+		return false;
 	}
 	
 	public String getScheduleServerUUid(){

@@ -36,7 +36,7 @@ public class ZKManager{
     private List<ACL> acl = new ArrayList<ACL>();
     private Properties properties;
 
-    private enum keys {
+    public enum keys {
         zkConnectString, rootPath, userName, password, zkSessionTimeout, autoRegisterTask, ipBlacklist
     }
 

@@ -28,6 +28,7 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -46,8 +47,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MethodInvoker;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.context.ContextLoader;
 
 import cn.uncode.schedule.ConsoleManager;
+import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.util.ScheduleUtil;
 
 /**
@@ -274,6 +277,14 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		}
 		return targetObject;
 	}
+	
+	public String getTargetBeanName(){
+		String[] names = ContextLoader.getCurrentWebApplicationContext().getBeanNamesForType(getTargetClass());
+		if(null != names){
+			return names[0];
+		}
+		return null;
+	}
 
 
 	public JobDetail getObject() {
@@ -312,10 +323,31 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		@Override
 		protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 			try {
-				String name = ScheduleUtil.getTaskNameFormBean(context.getJobDetail().getKey().getName(), this.methodInvoker.getTargetMethod());
+				TaskDefine taskDefine = new TaskDefine();
+				MethodInvokingJob methodInvokingJob = (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean.MethodInvokingJob) context.getJobInstance();
+				cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean methodInvokingJobDetailFactoryBean= (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean)methodInvokingJob.methodInvoker;
+				taskDefine.setTargetBean(methodInvokingJobDetailFactoryBean.getTargetBeanName());
+				taskDefine.setTargetMethod(this.methodInvoker.getTargetMethod());
+				taskDefine.setType(TaskDefine.TYPE_QUARTZ_TASK);
+				if(context.getTrigger() instanceof org.quartz.CronTrigger){
+					CronTriggerImpl cronTriggerImpl = (org.quartz.impl.triggers.CronTriggerImpl) context.getTrigger();
+					if(null != cronTriggerImpl.getCronExpression()){
+						taskDefine.setCronExpression(cronTriggerImpl.getCronExpression());
+					}
+					if(null != cronTriggerImpl.getStartTime()){
+						taskDefine.setStartTime(cronTriggerImpl.getStartTime());
+					}
+					if(cronTriggerImpl.getPriority() > 0){
+						taskDefine.setPeriod(cronTriggerImpl.getPriority());
+					}
+				}
+				String name = taskDefine.stringKey();
 				boolean isOwner = false;
+				boolean isRunning = true;
 				try {
+					boolean isExists = true;
 					if(ConsoleManager.getScheduleManager().getZkManager().checkZookeeperState()){
+						isExists = ConsoleManager.isExistsTask(taskDefine);
 						isOwner = ConsoleManager.getScheduleManager().getScheduleDataManager().isOwner(name, ConsoleManager.getScheduleManager().getScheduleServerUUid());
 						ConsoleManager.getScheduleManager().getIsOwnerMap().put(name, isOwner);
 					}else{
@@ -323,11 +355,15 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 						if(null != ConsoleManager.getScheduleManager().getIsOwnerMap()){
 							isOwner = ConsoleManager.getScheduleManager().getIsOwnerMap().get(name);
 						}
+						isRunning = ConsoleManager.getScheduleManager().getScheduleDataManager().isRunning(name);
+					}
+					if(!isExists){
+						ConsoleManager.addScheduleTask(taskDefine);
 					}
 				} catch (Exception e) {
 					LOGGER.error("Check task owner error.", e);
 				}
-	    		if(isOwner){
+	    		if(isOwner && isRunning){
 	    			ReflectionUtils.invokeMethod(setResultMethod, context, this.methodInvoker.invoke());
 	    			ConsoleManager.getScheduleManager().getScheduleDataManager().saveRunningInfo(name, ConsoleManager.getScheduleManager().getScheduleServerUUid());
 	    			LOGGER.info("Cron job has been executed.");

@@ -12,7 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 public class TaskDefine {
 	
 	public static final String TYPE_UNCODE_TASK = "uncode-task";
-	public static final String TYPE_OTHER_TASK = "quartz/spring-task";
+	public static final String TYPE_SPRING_TASK = "spring-task";
+	public static final String TYPE_QUARTZ_TASK = "quartz";
 	
 	public static final String STATUS_ERROR = "error";
 	public static final String STATUS_STOP = "stop";

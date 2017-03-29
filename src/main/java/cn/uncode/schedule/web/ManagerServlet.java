@@ -26,6 +26,8 @@ public class ManagerServlet extends HttpServlet{
 	 */
 	private static final long serialVersionUID = 8160082230341182715L;
 	
+	private static final String UNCODE_SESSION_KEY = "uncode_key_session";
+	
 	private static final String HEAD = 
 		    "<!DOCTYPE html>\n"+
 		    "<html>\n"+
@@ -55,10 +57,107 @@ public class ManagerServlet extends HttpServlet{
 			"\t			document.getElementById(\"addform\").submit();\n"+
 			"\t		}\n"+
 			"\t	</script>";
+	private static final String SCRIPT_LOGIN = 
+			"\t	<script type=\"text/javascript\">\n"+
+			"\t		function loginSubmit(){\n"+
+			"\t		    var accout = $(\"#account\").val(); \n"+
+			"\t		    var password = $(\"#password\").val(); \n"+
+			"\t		    if(accout == null || accout.length == 0){ \n"+
+			"\t		    	alert(\"用户名不能为空\"); \n"+
+			"\t		    	return; \n"+
+			"\t		    	return; \n"+
+			"\t		    } \n"+
+			"\t		    if(password == null || password.length == 0){ \n"+
+			"\t		    	alert(\"密码不能为空\"); \n"+
+			"\t		    	return; \n"+
+			"\t		    } \n"+
+			"\t			document.getElementById(\"loginform\").submit();\n"+
+			"\t		}\n"+
+			"\t	</script>";
+	
+	private static final String PAGE_LOGIN_STYLE = 
+			"\t <style>	\n"+
+			"\t ul{\n"+
+			"\t 	list-style-type: none;\n"+
+			"\t }\n"+
+			"\t a, button {\n"+
+			"\t 	cursor: pointer; \n"+
+			"\t }\n"+
+			"\t .loginContDiv{\n"+
+			"\t 	width: 400px;\n"+
+			"\t 	height: 500px;\n"+
+			"\t 	background-color:  -#f0f0f0;\n"+
+			"\t 	margin: 10%  auto;\n"+
+			"\t 	text-align: left;\n"+
+			"\t }\n"+
+			"\t .loginContUl{\n"+
+			"\t 	width :80%;\n"+
+			"\t 	margin: 0px  auto ;\n"+
+			"\t }\n"+
+			"\t .loginContLi{\n"+
+			"\t 	width :100%;\n"+
+			"\t 	margin: 0px auto 20px;\n"+
+			"\t }\n"+
+			"\t .loginContLi div{\n"+
+			"\t 	width :100%;\n"+
+			"\t }\n"+
+			"\t .loginContLi div input{\n"+
+			"\t 	width:296px;\n"+
+			"\t 	height:30px;\n"+
+			"\t }\n"+
+			"\t .txt{\n"+
+			"\t 	font-size:16px;\n"+
+			"\t 	padding:  5px 10px ;\n"+
+			"\t }\n"+
+			"\t .loginBtn{\n"+
+			"\t 	width :100%;\n"+
+			"\t 	height: 42px;\n"+
+			"\t 	border: 0;\n"+
+			"\t 	border-bottom-style: hidden;\n"+
+			"\t 	background-color:#84AF00;	\n"+
+			"\t }\n"+
+			"\t .loginBtn span{\n"+
+			"\t 	color:white;\n"+
+			"\t 	font-size: 20px;\n"+
+			"\t 	line-height: 40px;\n"+
+			"\t 	letter-spacing: 14px;\n"+
+			"\t }\n"+
+			"\t </style>\n";
+			
+	private static final String PAGE_LOGIN_HTML_1 = 
+			"\t <body>\n"+
+			"\t <div class=\"loginContDiv\">\n"+
+			"\t 	<ul class=\"loginContUl\">\n"+
+			"\t 		<li class=\"loginContLi\"> \n"+
+			"\t 			<div style=\"text-align:center;height:90px;margin:0 auto;\"><a href=\"http://www.uncode.cn\"><img alt=\"uncode\" src=\"https://static.oschina.net/uploads/space/2017/0328/152215_oOHj_99241.png\" style=\"width:200px\"></a>schedule</div>\n"+
+			"\t 		</li>\n"+
+			"\t 		<li class=\"loginContLi\"> \n"+
+			"\t 			<div><form id=\"loginform\" method=\"post\" action=\"";
+
+			
+	private static final String PAGE_LOGIN_HTML_2 = 
+			"\">\n"+
+			"\t 				<input  type=\"text\" name =\"account\" id=\"account\" placeholder=\"帐号\" /><br/><br/>\n"+
+			"\t 				<input  class=\"txt\" type=\"password\" name=\"password\" id=\"password\" placeholder=\"密码\" /><br/><br/>\n"+
+			"\t 				<button type=\"button\" style=\"width:100px;\" onclick=\"loginSubmit()\">登录</button>\t"+
+			"\t 				&nbsp;&nbsp;&nbsp;<a target=\"_blank\" href=\"http://git.oschina.net/uncode\">使用帮助</a>"+
+			"\t 			</div></form>\n"+
+			"\t 		</li>\n"+
+			"\t 	</ul>\n"+
+			"\t </div>\n"+
+			"\t </body>";
+	
 	
 	private static final String PAGE = 
 			"\t <body>\n"+
 			"\t <div class=\"container\">\n"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode\">【uncode系列组件】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-dal-all\">【uncode-dal-all】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-schedule\">【uncode-schedule】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-session\">【uncode-session】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-baas\">【uncode-baas】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-mq\">【uncode-mq】</a>\t\t"+
+			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-cache\">【uncode-cache】</a>\t\t"+
 			"\t     <div class=\"navbar-right\">\n"+
 			"\t     	<button type=\"button\" class=\"btn btn-primary\"  data-toggle=\"modal\" data-target=\"#myModal\" data-title=\"新增\">新增</button>\n"+
 			"\t     </div>\n"+
@@ -173,133 +272,160 @@ public class ManagerServlet extends HttpServlet{
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String del = request.getParameter("del");
-		String start = request.getParameter("start");
-		String stop = request.getParameter("stop");
-		String bean = request.getParameter("bean");
-		String method = request.getParameter("method");
-		if(StringUtils.isNotEmpty(del)){
-			TaskDefine taskDefine = new TaskDefine();
-			String[] dels = del.split("_");
-			taskDefine.setTargetBean(dels[0]);
-			taskDefine.setTargetMethod(dels[1]);
-			ConsoleManager.delScheduleTask(taskDefine);
-			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
-		}else if(StringUtils.isNotEmpty(start)){
-			TaskDefine taskDefine = new TaskDefine();
-			String[] dels = start.split("_");
-			taskDefine.setTargetBean(dels[0]);
-			taskDefine.setTargetMethod(dels[1]);
-			taskDefine.setStatus(TaskDefine.STATUS_RUNNING);
-			ConsoleManager.updateScheduleTask(taskDefine);
-			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
-		}else if(StringUtils.isNotEmpty(stop)){
-			TaskDefine taskDefine = new TaskDefine();
-			String[] dels = stop.split("_");
-			taskDefine.setTargetBean(dels[0]);
-			taskDefine.setTargetMethod(dels[1]);
-			taskDefine.setStatus(TaskDefine.STATUS_STOP);
-			ConsoleManager.updateScheduleTask(taskDefine);
-			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
-		}else if(StringUtils.isNotEmpty(bean) && StringUtils.isNotEmpty(method)){
-			TaskDefine taskDefine = new TaskDefine();
-			taskDefine.setTargetBean(bean);
-			taskDefine.setTargetMethod(method);
-			taskDefine.setType(TaskDefine.TYPE_UNCODE_TASK);
-			String cronExpression = request.getParameter("cronExpression");
-			if(StringUtils.isNotEmpty(cronExpression)){
-				taskDefine.setCronExpression(cronExpression);
+		String login = (String) request.getSession().getAttribute(UNCODE_SESSION_KEY);
+		if(StringUtils.isBlank(login)){
+			String account = request.getParameter("account");
+			String password = request.getParameter("password");
+			boolean avilb = false;
+			try {
+				avilb = ConsoleManager.getScheduleManager().checkAdminUser(account, password);
+				if(avilb){
+					request.getSession().setAttribute(UNCODE_SESSION_KEY, "uncode_login_success");
+					response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+				}
+			} catch (Exception e) {
 			}
-			String period = request.getParameter("period");
-			if(StringUtils.isNotEmpty(period)){
-				taskDefine.setPeriod(Long.valueOf(period));
+			response.setContentType("text/html;charset=UTF-8");
+	        PrintWriter out = response.getWriter();  
+			out.write(HEAD); 
+			out.write(SCRIPT_LOGIN);
+			out.write(PAGE_LOGIN_STYLE);
+			out.write(PAGE_LOGIN_HTML_1 + request.getSession().getServletContext().getContextPath()+"/uncode/schedule" + PAGE_LOGIN_HTML_2);
+/*			if(!avilb){
+				out.write("\t <div>\n");
+				out.write("\t 用户名或密码错误!\n");
+				out.write("\t </div>\n");
 			}
-			String startTime = request.getParameter("startTime");
-			if(StringUtils.isNotEmpty(startTime)){
-				taskDefine.setStartTime(new Date());
+*/			
+		}else{
+			String del = request.getParameter("del");
+			String start = request.getParameter("start");
+			String stop = request.getParameter("stop");
+			String bean = request.getParameter("bean");
+			String method = request.getParameter("method");
+			if(StringUtils.isNotEmpty(del)){
+				TaskDefine taskDefine = new TaskDefine();
+				String[] dels = del.split("_");
+				taskDefine.setTargetBean(dels[0]);
+				taskDefine.setTargetMethod(dels[1]);
+				ConsoleManager.delScheduleTask(taskDefine);
+				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+			}else if(StringUtils.isNotEmpty(start)){
+				TaskDefine taskDefine = new TaskDefine();
+				String[] dels = start.split("_");
+				taskDefine.setTargetBean(dels[0]);
+				taskDefine.setTargetMethod(dels[1]);
+				taskDefine.setStatus(TaskDefine.STATUS_RUNNING);
+				ConsoleManager.updateScheduleTask(taskDefine);
+				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+			}else if(StringUtils.isNotEmpty(stop)){
+				TaskDefine taskDefine = new TaskDefine();
+				String[] dels = stop.split("_");
+				taskDefine.setTargetBean(dels[0]);
+				taskDefine.setTargetMethod(dels[1]);
+				taskDefine.setStatus(TaskDefine.STATUS_STOP);
+				ConsoleManager.updateScheduleTask(taskDefine);
+				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
+			}else if(StringUtils.isNotEmpty(bean) && StringUtils.isNotEmpty(method)){
+				TaskDefine taskDefine = new TaskDefine();
+				taskDefine.setTargetBean(bean);
+				taskDefine.setTargetMethod(method);
+				taskDefine.setType(TaskDefine.TYPE_UNCODE_TASK);
+				String cronExpression = request.getParameter("cronExpression");
+				if(StringUtils.isNotEmpty(cronExpression)){
+					taskDefine.setCronExpression(cronExpression);
+				}
+				String period = request.getParameter("period");
+				if(StringUtils.isNotEmpty(period)){
+					taskDefine.setPeriod(Long.valueOf(period));
+				}
+				String startTime = request.getParameter("startTime");
+				if(StringUtils.isNotEmpty(startTime)){
+					taskDefine.setStartTime(new Date());
+				}
+				String param = request.getParameter("param");
+				if(StringUtils.isNotEmpty(param)){
+					taskDefine.setParams(param);
+				}
+				if(StringUtils.isNotEmpty(cronExpression) || StringUtils.isNotEmpty(period)){
+					ConsoleManager.addScheduleTask(taskDefine);
+				}
+				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
 			}
-			String param = request.getParameter("param");
-			if(StringUtils.isNotEmpty(param)){
-				taskDefine.setParams(param);
+			try {
+				List<String> servers = ConsoleManager.getScheduleManager().getScheduleDataManager().loadScheduleServerNames();
+				if(servers != null){
+					response.setContentType("text/html;charset=UTF-8");
+			        PrintWriter out = response.getWriter();  
+			        StringBuffer sb = new StringBuffer();
+		    		for(int i=0; i< servers.size();i++){
+		    			String ser = servers.get(i);
+		    			sb.append("<tr class=\"info\">")
+		    			  .append("<td>").append(i+1).append("</td>")
+		    			  .append("<td>").append(ser).append("</td>");
+						if( ConsoleManager.getScheduleManager().getScheduleDataManager().isLeader(ser, servers)){
+							sb.append("<td>").append("是").append("</td>");
+						}else{
+							sb.append("<td>").append("否").append("</td>");
+						}
+		    			sb.append("</tr>");
+		    		}
+		    		
+		    		List<TaskDefine> tasks = ConsoleManager.queryScheduleTask();
+		    		StringBuffer sbTask = new StringBuffer();
+		    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    		for(int i=0; i< tasks.size();i++){
+		    			TaskDefine taskDefine = tasks.get(i);
+		    			sbTask.append("<tr class=\"info\">")
+		    			  .append("<td>").append(i+1).append("</td>")
+		    			  .append("<td>").append(taskDefine.getTargetBean()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getTargetMethod()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getType()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getCronExpression()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getStartTime()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getPeriod()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getCurrentServer()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getStatus()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getRunTimes()).append("</td>");
+		    			if(taskDefine.getLastRunningTime() > 0){
+		    				Date date = new Date(taskDefine.getLastRunningTime());
+			    			sbTask.append("<td>").append(sdf.format(date)).append("</td>");
+		    			}else{
+		    				sbTask.append("<td>").append("-").append("</td>");
+		    			}
+		    			sbTask.append("<td>");
+		    			if(taskDefine.isStop()){
+		    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+			  				 .append("/uncode/schedule?start=")
+			                 .append(taskDefine.getTargetBean())
+			                 .append("_")
+			                 .append(taskDefine.getTargetMethod())
+			                 .append("\" style=\"color:green\">运行</a>");
+		    			}else{
+		    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+			  				 .append("/uncode/schedule?stop=")
+			                 .append(taskDefine.getTargetBean())
+			                 .append("_")
+			                 .append(taskDefine.getTargetMethod())
+			                 .append("\" style=\"color:red\">停止</a>");
+		    			}
+		    			sbTask.append(" <a href=\"").append(request.getSession().getServletContext().getContextPath())
+		    			  				 .append("/uncode/schedule?del=")
+		    			                 .append(taskDefine.getTargetBean())
+		    			                 .append("_")
+		    			                 .append(taskDefine.getTargetMethod())
+		    			                 .append("\" >删除</a>")
+		    			                 .append("</td>");
+						sbTask.append("</tr>");
+		    		}
+		    		 out.write(HEAD);
+		    		 out.write(SCRIPT);
+		    		 out.write(String.format(PAGE, request.getSession().getServletContext().getContextPath()+"/uncode/schedule", 
+		    				sb.toString(), sbTask.toString()));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if(StringUtils.isNotEmpty(cronExpression) || StringUtils.isNotEmpty(period)){
-				ConsoleManager.addScheduleTask(taskDefine);
-			}
-			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
-		}
-		try {
-			List<String> servers = ConsoleManager.getScheduleManager().getScheduleDataManager().loadScheduleServerNames();
-			if(servers != null){
-				response.setContentType("text/html;charset=UTF-8");
-		        PrintWriter out = response.getWriter();  
-		        StringBuffer sb = new StringBuffer();
-	    		for(int i=0; i< servers.size();i++){
-	    			String ser = servers.get(i);
-	    			sb.append("<tr class=\"info\">")
-	    			  .append("<td>").append(i+1).append("</td>")
-	    			  .append("<td>").append(ser).append("</td>");
-					if( ConsoleManager.getScheduleManager().getScheduleDataManager().isLeader(ser, servers)){
-						sb.append("<td>").append("是").append("</td>");
-					}else{
-						sb.append("<td>").append("否").append("</td>");
-					}
-	    			sb.append("</tr>");
-	    		}
-	    		
-	    		List<TaskDefine> tasks = ConsoleManager.queryScheduleTask();
-	    		StringBuffer sbTask = new StringBuffer();
-	    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		for(int i=0; i< tasks.size();i++){
-	    			TaskDefine taskDefine = tasks.get(i);
-	    			sbTask.append("<tr class=\"info\">")
-	    			  .append("<td>").append(i+1).append("</td>")
-	    			  .append("<td>").append(taskDefine.getTargetBean()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getTargetMethod()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getType()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getCronExpression()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getStartTime()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getPeriod()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getCurrentServer()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getStatus()).append("</td>")
-	    			  .append("<td>").append(taskDefine.getRunTimes()).append("</td>");
-	    			if(taskDefine.getLastRunningTime() > 0){
-	    				Date date = new Date(taskDefine.getLastRunningTime());
-		    			sbTask.append("<td>").append(sdf.format(date)).append("</td>");
-	    			}else{
-	    				sbTask.append("<td>").append("-").append("</td>");
-	    			}
-	    			sbTask.append("<td>");
-	    			if(taskDefine.isStop()){
-	    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
-		  				 .append("/uncode/schedule?start=")
-		                 .append(taskDefine.getTargetBean())
-		                 .append("_")
-		                 .append(taskDefine.getTargetMethod())
-		                 .append("\" style=\"color:green\">运行</a>");
-	    			}else{
-	    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
-		  				 .append("/uncode/schedule?stop=")
-		                 .append(taskDefine.getTargetBean())
-		                 .append("_")
-		                 .append(taskDefine.getTargetMethod())
-		                 .append("\" style=\"color:red\">停止</a>");
-	    			}
-	    			sbTask.append(" <a href=\"").append(request.getSession().getServletContext().getContextPath())
-	    			  				 .append("/uncode/schedule?del=")
-	    			                 .append(taskDefine.getTargetBean())
-	    			                 .append("_")
-	    			                 .append(taskDefine.getTargetMethod())
-	    			                 .append("\" >删除</a>")
-	    			                 .append("</td>");
-					sbTask.append("</tr>");
-	    		}
-	    		 out.write(HEAD);
-	    		 out.write(SCRIPT);
-	    		 out.write(String.format(PAGE, request.getSession().getServletContext().getContextPath()+"/uncode/schedule", 
-	    				sb.toString(), sbTask.toString()));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 	}
