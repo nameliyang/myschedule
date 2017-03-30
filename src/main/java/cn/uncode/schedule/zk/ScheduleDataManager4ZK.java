@@ -317,18 +317,17 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		//查看集群中是否注册当前任务，如果没有就自动注册
 		String zkPath = this.pathTask + "/" + name;
 		if(this.zkManager.isAutoRegisterTask()){
-			
-			if(this.getZooKeeper().exists(zkPath,false) == null){
-				if (this.getZooKeeper().exists(this.pathTask, false) == null) {
-					ZKTools.createPath(getZooKeeper(),this.pathTask, CreateMode.PERSISTENT, this.zkManager.getAcl());
-				}
-				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
-				if(LOG.isDebugEnabled()){
-					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");
-				}
-                // 重新分配任务
-                assignServer2Task(loadScheduleServerNames(), zkPath);
-			}
+//			if(this.getZooKeeper().exists(zkPath,false) == null){
+//				if (this.getZooKeeper().exists(this.pathTask, false) == null) {
+//					ZKTools.createPath(getZooKeeper(),this.pathTask, CreateMode.PERSISTENT, this.zkManager.getAcl());
+//				}
+//				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
+//				if(LOG.isDebugEnabled()){
+//					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");
+//				}
+//                // 重新分配任务
+//                assignServer2Task(loadScheduleServerNames(), zkPath);
+//			}
 		}
 		//判断是否分配给当前节点
 		if(this.getZooKeeper().exists(zkPath + "/" + uuid, false) != null){
@@ -395,9 +394,14 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		byte[] data = this.getZooKeeper().getData(zkPath, null, null);
 		if(null == data || data.length == 0){
+			if(StringUtils.isBlank(taskDefine.getType())){
+				taskDefine.setType(TaskDefine.TYPE_UNCODE_TASK);
+			}
 			String json = this.gson.toJson(taskDefine);
 			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
 		}
+        // 重新分配任务
+        assignServer2Task(loadScheduleServerNames(), zkPath);
 	}
 	
 	@Override

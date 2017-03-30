@@ -348,6 +348,9 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 					boolean isExists = true;
 					if(ConsoleManager.getScheduleManager().getZkManager().checkZookeeperState()){
 						isExists = ConsoleManager.isExistsTask(taskDefine);
+						if(!isExists){
+							ConsoleManager.addScheduleTask(taskDefine);
+						}
 						isOwner = ConsoleManager.getScheduleManager().getScheduleDataManager().isOwner(name, ConsoleManager.getScheduleManager().getScheduleServerUUid());
 						ConsoleManager.getScheduleManager().getIsOwnerMap().put(name, isOwner);
 					}else{
@@ -355,11 +358,8 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 						if(null != ConsoleManager.getScheduleManager().getIsOwnerMap()){
 							isOwner = ConsoleManager.getScheduleManager().getIsOwnerMap().get(name);
 						}
-						isRunning = ConsoleManager.getScheduleManager().getScheduleDataManager().isRunning(name);
 					}
-					if(!isExists){
-						ConsoleManager.addScheduleTask(taskDefine);
-					}
+					isRunning = ConsoleManager.getScheduleManager().getScheduleDataManager().isRunning(name);
 				} catch (Exception e) {
 					LOGGER.error("Check task owner error.", e);
 				}
