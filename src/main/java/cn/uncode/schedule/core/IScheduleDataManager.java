@@ -64,6 +64,8 @@ public interface IScheduleDataManager{
 	
 	public boolean isExistsTask(TaskDefine taskDefine) throws Exception;
     
+	public boolean saveRunningInfo(String name, String uuid, String msg)throws Exception;
+	
 	public boolean saveRunningInfo(String name, String uuid)throws Exception;
     
      

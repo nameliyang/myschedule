@@ -110,21 +110,16 @@ public class DynamicTaskManager {
 			bean = ZKScheduleManager.getApplicationcontext().getBean(targetBean);
 			scheduledMethodRunnable = _buildScheduledRunnable(bean, targetMethod, params);
 		} catch (Exception e) {
+			String name = ScheduleUtil.buildScheduleKey(targetBean, targetMethod);
+			try {
+				ConsoleManager.getScheduleManager().getScheduleDataManager().saveRunningInfo(name, ConsoleManager.getScheduleManager().getScheduleServerUUid(), "method is null");
+			} catch (Exception e1) {
+				LOGGER.debug(e.getLocalizedMessage(), e);
+			}
 			LOGGER.debug(e.getLocalizedMessage(), e);
 		}
 		return scheduledMethodRunnable;
 	}
-
-	private static ScheduledMethodRunnable buildScheduledRunnable(Object bean, String targetMethod, String params){
-		ScheduledMethodRunnable scheduledMethodRunnable = null;
-		try {
-			scheduledMethodRunnable = _buildScheduledRunnable(bean, targetMethod, params);
-		}catch (Exception e){
-			LOGGER.debug(e.getLocalizedMessage(), e);
-		}
-		return scheduledMethodRunnable;
-	}
-
 
 	private static ScheduledMethodRunnable _buildScheduledRunnable(Object bean, String targetMethod, String params) throws Exception {
 
@@ -145,7 +140,6 @@ public class DynamicTaskManager {
 		} else {
 			method = ReflectionUtils.findMethod(clazz, targetMethod);
 		}
-
 		Assert.notNull(method, "can not find method named " + targetMethod);
 		scheduledMethodRunnable = new ScheduledMethodRunnable(bean, method, params);
 		return scheduledMethodRunnable;

@@ -1,5 +1,6 @@
 package cn.uncode.schedule;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.ReflectionUtils;
 
 import cn.uncode.schedule.core.IScheduleDataManager;
 import cn.uncode.schedule.core.ScheduleServer;
@@ -270,9 +272,14 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 							}
 						}
 						if(isOwner && isRunning){
-			    			task.run();
-			    			scheduleDataManager.saveRunningInfo(name, currenScheduleServer.getUuid());
-			    			LOGGER.info("Cron job has been executed.");
+							String msg = null;
+			    			try {
+			    				task.run();
+				    			LOGGER.info("Cron job has been executed.");
+							} catch (Exception e) {
+								msg = e.getLocalizedMessage();
+							} 
+			    			scheduleDataManager.saveRunningInfo(name, currenScheduleServer.getUuid(), msg);
 			    		}
 					} catch (Exception e) {
 						LOGGER.error("Check task owner error.", e);

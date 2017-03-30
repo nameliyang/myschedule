@@ -320,19 +320,6 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		boolean isOwner = false;
 		//查看集群中是否注册当前任务，如果没有就自动注册
 		String zkPath = this.pathTask + "/" + name;
-		if(this.zkManager.isAutoRegisterTask()){
-//			if(this.getZooKeeper().exists(zkPath,false) == null){
-//				if (this.getZooKeeper().exists(this.pathTask, false) == null) {
-//					ZKTools.createPath(getZooKeeper(),this.pathTask, CreateMode.PERSISTENT, this.zkManager.getAcl());
-//				}
-//				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
-//				if(LOG.isDebugEnabled()){
-//					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");
-//				}
-//                // 重新分配任务
-//                assignServer2Task(loadScheduleServerNames(), zkPath);
-//			}
-		}
 		//判断是否分配给当前节点
 		if(this.getZooKeeper().exists(zkPath + "/" + uuid, false) != null){
 			isOwner = true;
@@ -360,6 +347,12 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	
 	@Override
 	public boolean saveRunningInfo(String name, String uuid) throws Exception {
+		return saveRunningInfo(name, uuid, null);
+	}
+
+	
+	@Override
+	public boolean saveRunningInfo(String name, String uuid, String msg) throws Exception {
 		//查看集群中是否注册当前任务，如果没有就自动注册
 		String zkPath = this.pathTask + "/" + name;
 		//判断是否分配给当前节点
@@ -374,7 +367,12 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 					times = Integer.parseInt(vals[0]);
 				}
 				times++;
-				String newVal = times+":"+System.currentTimeMillis();
+				String newVal = null;
+				if(StringUtils.isNotBlank(msg)){
+					newVal = "0:"+System.currentTimeMillis() + ":" + msg;
+				}else{
+					newVal = times+":"+System.currentTimeMillis();
+				}
 				this.getZooKeeper().setData(zkPath, newVal.getBytes(), -1);
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -483,6 +481,9 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						String[] vals = val.split(":");
 						taskDefine.setRunTimes(Integer.valueOf(vals[0]));
 						taskDefine.setLastRunningTime(Long.valueOf(vals[1]));
+						if(vals.length > 2 && StringUtils.isNotBlank(vals[2])){
+							taskDefine.setStatus(TaskDefine.STATUS_ERROR + ":" + vals[2]);
+						}
 					}
 				}
 				taskDefines.add(taskDefine);

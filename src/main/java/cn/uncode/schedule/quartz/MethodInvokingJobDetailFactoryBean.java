@@ -322,7 +322,6 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		 */
 		@Override
 		protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-			try {
 				TaskDefine taskDefine = new TaskDefine();
 				MethodInvokingJob methodInvokingJob = (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean.MethodInvokingJob) context.getJobInstance();
 				cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean methodInvokingJobDetailFactoryBean= (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean)methodInvokingJob.methodInvoker;
@@ -364,25 +363,21 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 					LOGGER.error("Check task owner error.", e);
 				}
 	    		if(isOwner && isRunning){
-	    			ReflectionUtils.invokeMethod(setResultMethod, context, this.methodInvoker.invoke());
-	    			ConsoleManager.getScheduleManager().getScheduleDataManager().saveRunningInfo(name, ConsoleManager.getScheduleManager().getScheduleServerUUid());
-	    			LOGGER.info("Cron job has been executed.");
+	    			String msg = null;
+	    			try {
+	    				ReflectionUtils.invokeMethod(setResultMethod, context, this.methodInvoker.invoke());
+		    			LOGGER.info("Cron job has been executed.");
+					} catch (InvocationTargetException e) {
+						msg = e.getLocalizedMessage();
+					} catch (IllegalAccessException e) {
+						msg = e.getLocalizedMessage();
+					}
+	    			try {
+						ConsoleManager.getScheduleManager().getScheduleDataManager().saveRunningInfo(name, ConsoleManager.getScheduleManager().getScheduleServerUUid(), msg);
+					} catch (Exception e) {
+						LOGGER.error(e.getMessage(),e);
+					}
 	    		}
-			}
-			catch (InvocationTargetException ex) {
-				if (ex.getTargetException() instanceof JobExecutionException) {
-					// -> JobExecutionException, to be logged at info level by Quartz
-					throw (JobExecutionException) ex.getTargetException();
-				}
-				else {
-					// -> "unhandled exception", to be logged at error level by Quartz
-					throw new JobMethodInvocationFailedException(this.methodInvoker, ex.getTargetException());
-				}
-			}
-			catch (Exception ex) {
-				// -> "unhandled exception", to be logged at error level by Quartz
-				throw new JobMethodInvocationFailedException(this.methodInvoker, ex);
-			}
 		}
 	}
 
