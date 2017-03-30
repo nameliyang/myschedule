@@ -126,6 +126,7 @@ public class ManagerServlet extends HttpServlet{
 			
 	private static final String PAGE_LOGIN_HTML_1 = 
 			"\t <body>\n"+
+			"\t <script src='http://git.oschina.net/uncode/uncode-schedule/star_widget_preview'></script>"+
 			"\t <div class=\"loginContDiv\">\n"+
 			"\t 	<ul class=\"loginContUl\">\n"+
 			"\t 		<li class=\"loginContLi\"> \n"+
@@ -145,6 +146,9 @@ public class ManagerServlet extends HttpServlet{
 			"\t 		</li>\n"+
 			"\t 	</ul>\n"+
 			"\t </div>\n"+
+
+
+
 			"\t </body>";
 	
 	
