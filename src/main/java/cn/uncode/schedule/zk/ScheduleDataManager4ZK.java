@@ -255,13 +255,17 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		 
 	}
 
-	private void assignServer2Task(List<String> taskServerList, String taskPath)throws Exception {
+	private void assignServer2Task(List<String> taskServerList, String taskPath) throws Exception {
 		int index = random.nextInt(taskServerList.size());
-		 String serverId = taskServerList.get(index);
-		 this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
-		 if(LOG.isDebugEnabled()){
-			 LOG.debug("Assign server [" + serverId + "]" + " to task [" + taskPath + "]");
-		 }
+		String serverId = taskServerList.get(index);
+		try {
+			this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+		} catch (Exception e) {
+			LOG.error("assign task error");
+		}
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Assign server [" + serverId + "]" + " to task [" + taskPath + "]");
+		}
 	}
 
 	public boolean isLeader(String uuid,List<String> serverList){
