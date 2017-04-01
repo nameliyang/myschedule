@@ -259,7 +259,9 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		int index = random.nextInt(taskServerList.size());
 		String serverId = taskServerList.get(index);
 		try {
-			this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+			if(this.getZooKeeper().exists(taskPath, false) != null){
+				this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+			}
 		} catch (Exception e) {
 			LOG.error("assign task error");
 		}
