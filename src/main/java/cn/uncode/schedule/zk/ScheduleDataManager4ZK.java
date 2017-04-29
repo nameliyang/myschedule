@@ -235,8 +235,13 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						 boolean hasAssignSuccess = false;
 						 for (String serverId : taskServerIds) {
 							 if (taskServerList.contains(serverId)) {
-								 hasAssignSuccess = true;
-								 continue;
+								 //防止重复分配任务，如果已经成功分配，第二个以后都删除
+								 if(hasAssignSuccess){
+									 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
+								 }else{
+									 hasAssignSuccess = true;
+									 continue; 
+								 }
 							 }
 							 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
 						 }
@@ -404,8 +409,6 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			String json = this.gson.toJson(taskDefine);
 			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
 		}
-        // 重新分配任务
-        assignServer2Task(loadScheduleServerNames(), zkPath);
 	}
 	
 	@Override
@@ -508,8 +511,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						 if (null != data) {
 							 String json = new String(data);
 							 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
-							 ownerTask.add(taskName);
 							 if(TaskDefine.TYPE_UNCODE_TASK.equals(taskDefine.getType())){
+								 ownerTask.add(taskName);
 								 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
 							 }
 						 }

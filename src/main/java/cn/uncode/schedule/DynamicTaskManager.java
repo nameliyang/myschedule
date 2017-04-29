@@ -29,7 +29,7 @@ public class DynamicTaskManager {
 	
 	
 	private static final Map<String, ScheduledFuture<?>> SCHEDULE_FUTURES = new ConcurrentHashMap<String, ScheduledFuture<?>>();
-	
+	private static final Map<String, TaskDefine> TASKS = new ConcurrentHashMap<String, TaskDefine>();
 	
 	/**
 	 * 启动定时任务
@@ -37,8 +37,20 @@ public class DynamicTaskManager {
 	 * @param currentTime
 	 */
 	public static void scheduleTask(TaskDefine taskDefine, Date currentTime){
-		scheduleTask(taskDefine.getTargetBean(), taskDefine.getTargetMethod(),
-				taskDefine.getCronExpression(), taskDefine.getStartTime(), taskDefine.getPeriod(), taskDefine.getParams(), taskDefine.getExtKeySuffix());
+		boolean newTask = true;
+		if(TASKS.containsKey(taskDefine.stringKey())){
+			if(taskDefine.equals(TASKS.get(taskDefine.stringKey()))){
+				newTask = false;
+			}else{
+				SCHEDULE_FUTURES.get(taskDefine.stringKey()).cancel(true);
+				SCHEDULE_FUTURES.remove(taskDefine.stringKey());
+			}
+		}
+		if(newTask){
+			TASKS.put(taskDefine.stringKey(), taskDefine);
+			scheduleTask(taskDefine.getTargetBean(), taskDefine.getTargetMethod(),
+					taskDefine.getCronExpression(), taskDefine.getStartTime(), taskDefine.getPeriod(), taskDefine.getParams(), taskDefine.getExtKeySuffix());
+		}
 	}
 	
 	public static void clearLocalTask(List<String> existsTaskName){
@@ -46,6 +58,7 @@ public class DynamicTaskManager {
 			if(!existsTaskName.contains(name)){
 				SCHEDULE_FUTURES.get(name).cancel(true);
 				SCHEDULE_FUTURES.remove(name);
+				TASKS.remove(name);
 			}
 		}
 	}

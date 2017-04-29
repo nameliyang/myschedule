@@ -2,6 +2,7 @@ package cn.uncode.schedule.core;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -40,11 +41,9 @@ public class TaskDefine {
 	private Date startTime;
 	
 	/**
-	 * 周期（秒）
+	 * 周期（毫秒）
 	 */
 	private long period;
-	
-	private String currentServer;
 	
 	/**
 	 * 参数
@@ -55,6 +54,11 @@ public class TaskDefine {
 	 * 类型
 	 */
 	private String type;
+	
+	/**
+	 * 后台显示参数，当前任务执行节点
+	 */
+	private String currentServer;
 	
 	/**
 	 * 后台显示参数，无业务内含
@@ -225,6 +229,49 @@ public class TaskDefine {
 	}
 
 
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((targetBean == null) ? 0 : targetBean.hashCode());
+        result = prime * result + ((targetMethod == null) ? 0 : targetMethod.hashCode());
+        result = prime * result + ((cronExpression == null) ? 0 : cronExpression.hashCode());
+        result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
+        result = prime * result + (int)period;
+        result = prime * result + ((params == null) ? 0 : params.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((extKeySuffix == null) ? 0 : extKeySuffix.hashCode());
+        return result;
+    }
+    
+	@Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof TaskDefine)) {
+            return false;
+        }
+        TaskDefine ou = (TaskDefine) obj;
+        if (!ObjectUtils.equals(this.targetBean, ou.targetBean)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.targetMethod, ou.targetMethod)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.cronExpression, ou.cronExpression)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.startTime, ou.startTime)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.params, ou.params)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.type, ou.type)) {
+            return false;
+        }
+        if (!ObjectUtils.equals(this.extKeySuffix, ou.extKeySuffix)) {
+            return false;
+        }
+        return this.period == ou.period;
+    }
 	
 	
 	

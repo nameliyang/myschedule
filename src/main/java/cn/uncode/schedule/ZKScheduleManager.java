@@ -1,6 +1,5 @@
 package cn.uncode.schedule;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.util.ReflectionUtils;
 
 import cn.uncode.schedule.core.IScheduleDataManager;
 import cn.uncode.schedule.core.ScheduleServer;
@@ -30,7 +28,6 @@ import cn.uncode.schedule.core.ScheduledMethodRunnable;
 import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.zk.ScheduleDataManager4ZK;
 import cn.uncode.schedule.zk.ZKManager;
-import cn.uncode.schedule.zk.ZKManager.keys;
 
 /**
  * 调度器核心管理
@@ -68,7 +65,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
 	 * 心跳间隔
 	 */
-	private int timerInterval = 2000;
+	private int timerInterval = 1000;
 
 	/**
 	 * 是否注册成功
@@ -245,7 +242,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 				hearBeatTimer = new Timer("ScheduleManager-"
 						+ this.currenScheduleServer.getUuid() + "-HearBeat");
 			}
-			hearBeatTimer.schedule(new HeartBeatTimerTask(this), 2000, this.timerInterval);
+			hearBeatTimer.schedule(new HeartBeatTimerTask(this), 1000, this.timerInterval);
 		}
 	}
 	
