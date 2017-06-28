@@ -155,13 +155,7 @@ public class ManagerServlet extends HttpServlet{
 	private static final String PAGE = 
 			"\t <body>\n"+
 			"\t <div class=\"container\">\n"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode\">【uncode系列组件】</a>\t\t"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-dal-all\">【uncode-dal-all】</a>\t\t"+
 			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-schedule\">【uncode-schedule】</a>\t\t"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-session\">【uncode-session】</a>\t\t"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-baas\">【uncode-baas】</a>\t\t"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-mq\">【uncode-mq】</a>\t\t"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-cache\">【uncode-cache】</a>\t\t"+
 			"\t     <div class=\"navbar-right\">\n"+
 			"\t     	<button type=\"button\" class=\"btn btn-primary\"  data-toggle=\"modal\" data-target=\"#myModal\" data-title=\"新增\">新增</button>\n"+
 			"\t     </div>\n"+

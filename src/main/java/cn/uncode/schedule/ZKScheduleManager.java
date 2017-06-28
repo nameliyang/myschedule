@@ -70,7 +70,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	/**
 	 * 是否注册成功
 	 */
-	private boolean isScheduleServerRegister = false;
+	private boolean isScheduleServerRegister = true;
 
 	private static ApplicationContext applicationcontext;
 	
