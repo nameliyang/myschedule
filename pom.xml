@@ -60,15 +60,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 		</dependency>
-  
-		<dependency>  
-            <groupId>org.springframework</groupId>  
-            <artifactId>spring-context-support</artifactId>  
-        </dependency>
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-tx</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-context-support</artifactId>
+		</dependency> 
 
 		<!-- =================================================== -->
 		<!-- servlet -->
@@ -99,7 +98,9 @@
 			<artifactId>gson</artifactId>
 		</dependency>
 		
+		<!-- ==================== -->
 		<!-- 任务调度quartz -->
+		<!-- ==================== -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
