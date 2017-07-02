@@ -46,32 +46,43 @@ public class ScheduleUtil {
             throw new RuntimeException(ex);
         }
     }
+    
+
 
 	public static String getLocalIP() {
 		try {
-			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-			if (interfaces != null) {
-				while (interfaces.hasMoreElements()) {
-					NetworkInterface network = interfaces.nextElement();
-					Enumeration<InetAddress> addresses = network.getInetAddresses();
-					if (addresses != null) {
-						while (addresses.hasMoreElements()) {
-							try {
-								InetAddress address = addresses.nextElement();
-								if (isValidAddress(address)) {
-									return address.getHostAddress();
-								}
-							} catch (Throwable e) {
-								return "";
-							}
-						}
+			
+			String localip = null;// 本地IP，如果没有配置外网IP则返回它
+			String netip = null;// 外网IP
+
+			Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
+			InetAddress ip = null;
+			boolean finded = false;// 是否找到外网IP
+			while (netInterfaces.hasMoreElements() && !finded) {
+				NetworkInterface ni = netInterfaces.nextElement();
+				Enumeration<InetAddress> address = ni.getInetAddresses();
+				while (address.hasMoreElements()) {
+					ip = address.nextElement();
+					if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
+							&& ip.getHostAddress().indexOf(":") == -1) {// 外网IP
+						netip = ip.getHostAddress();
+						finded = true;
+						break;
+					} else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
+							&& ip.getHostAddress().indexOf(":") == -1) {// 内网IP
+						localip = ip.getHostAddress();
 					}
 				}
+			}
+
+			if (netip != null && !"".equals(netip)) {
+				return netip;
+			} else {
+				return localip;
 			}
 		} catch (Throwable e) {
 			return "";
 		}
-		return "";
 	}
     
     

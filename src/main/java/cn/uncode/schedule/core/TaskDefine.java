@@ -95,9 +95,22 @@ public class TaskDefine {
 	public String getTargetMethod() {
 		return targetMethod;
 	}
+	
+	public String getTargetMethod4Show(){
+		if(StringUtils.isNotBlank(extKeySuffix)){
+			return targetMethod + "-" + extKeySuffix;
+		}
+		return targetMethod;
+	}
 
 	public void setTargetMethod(String targetMethod) {
-		this.targetMethod = targetMethod;
+		if(StringUtils.isNotBlank(targetMethod) && targetMethod.indexOf("-") != -1){
+			String[] vals = targetMethod.split("-");
+			this.targetMethod = vals[0];
+			this.extKeySuffix = vals[1];
+		}else{
+			this.targetMethod = targetMethod;
+		}
 	}
 
 	public String getCronExpression() {
@@ -205,7 +218,13 @@ public class TaskDefine {
 			this.targetBean = taskDefine.getTargetBean();
 		}
 		if(StringUtils.isNotBlank(taskDefine.getTargetMethod())){
-			this.targetMethod = taskDefine.getTargetMethod();
+			if(taskDefine.getTargetMethod().indexOf("-") != -1){
+				String[] vals = taskDefine.getTargetMethod().split("-");
+				this.targetMethod = vals[0];
+				this.extKeySuffix = vals[1];
+			}else{
+				this.targetMethod = taskDefine.getTargetMethod();
+			}
 		}
 		if(StringUtils.isNotBlank(taskDefine.getCronExpression())){
 			this.cronExpression = taskDefine.getCronExpression();
@@ -213,7 +232,9 @@ public class TaskDefine {
 		if(startTime != null){
 			this.startTime = taskDefine.getStartTime();
 		}
-		this.period = taskDefine.getPeriod();
+		if(taskDefine.getPeriod() > 0){
+			this.period = taskDefine.getPeriod();
+		}
 		if(StringUtils.isNotBlank(taskDefine.getParams())){
 			this.params = taskDefine.getParams();
 		}

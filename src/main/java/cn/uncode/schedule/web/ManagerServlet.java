@@ -154,8 +154,9 @@ public class ManagerServlet extends HttpServlet{
 	
 	private static final String PAGE = 
 			"\t <body>\n"+
-			"\t <div class=\"container\">\n"+
-			"\t     	<a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-schedule\">【uncode-schedule】</a>\t\t"+
+			"\t <div class=\"container-fluid\">\n"+
+			"\t 	<h1>Uncode-Schedule管理页面</h1>\n"+
+			"\t     <a  target=\"_blank\" href=\"http://git.oschina.net/uncode/uncode-schedule\">【uncode-schedule】</a>\t\t"+
 			"\t     <div class=\"navbar-right\">\n"+
 			"\t     	<button type=\"button\" class=\"btn btn-primary\"  data-toggle=\"modal\" data-target=\"#myModal\" data-title=\"新增\">新增</button>\n"+
 			"\t     </div>\n"+
@@ -207,6 +208,12 @@ public class ManagerServlet extends HttpServlet{
 			"\t 											<input id=\"param\" name=\"param\" type=\"text\" class=\"form-control\" required>\n"+
 			"\t 										</div>\n"+
 			"\t 									</div>\n"+
+			"\t 									<div class=\"form-group\">\n"+
+			"\t 										<label class=\"col-sm-4 control-label\" for=\"param\">后缀</label>\n"+
+			"\t 										<div class=\"col-sm-6\">\n"+
+			"\t 											<input id=\"extKeySuffix\" name=\"extKeySuffix\" type=\"text\" class=\"form-control\" required>\n"+
+			"\t 										</div>\n"+
+			"\t 									</div>\n"+
 			"\t              		   				<div class=\"modal-footer\">\n"+
 			"\t               		      				<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">取消</button>\n"+
 			"\t               		      				<button type=\"button\" onclick=\"formSubmit()\" class=\"btn btn-primary\">保存</button>\n"+
@@ -221,7 +228,6 @@ public class ManagerServlet extends HttpServlet{
 			"\t     	</div>\n"+
 		    "\t 	</div>\n"+
 		    "\t </div>\n"+
-			"\t <h1>Uncode-Schedule管理页面</h1>\n"+
 			"\t <div class=\"container-fluid\">\n"+
 			"\t 	<div class=\"row-fluid\">\n"+
 			"\t 		<div class=\"span12\">\n"+
@@ -306,6 +312,9 @@ public class ManagerServlet extends HttpServlet{
 				String[] dels = del.split("_");
 				taskDefine.setTargetBean(dels[0]);
 				taskDefine.setTargetMethod(dels[1]);
+				if(dels.length > 2){
+					taskDefine.setExtKeySuffix(dels[2]);
+				}
 				ConsoleManager.delScheduleTask(taskDefine);
 				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
 			}else if(StringUtils.isNotEmpty(start)){
@@ -313,6 +322,9 @@ public class ManagerServlet extends HttpServlet{
 				String[] dels = start.split("_");
 				taskDefine.setTargetBean(dels[0]);
 				taskDefine.setTargetMethod(dels[1]);
+				if(dels.length > 2){
+					taskDefine.setExtKeySuffix(dels[2]);
+				}
 				taskDefine.setStatus(TaskDefine.STATUS_RUNNING);
 				ConsoleManager.updateScheduleTask(taskDefine);
 				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
@@ -321,6 +333,9 @@ public class ManagerServlet extends HttpServlet{
 				String[] dels = stop.split("_");
 				taskDefine.setTargetBean(dels[0]);
 				taskDefine.setTargetMethod(dels[1]);
+				if(dels.length > 2){
+					taskDefine.setExtKeySuffix(dels[2]);
+				}
 				taskDefine.setStatus(TaskDefine.STATUS_STOP);
 				ConsoleManager.updateScheduleTask(taskDefine);
 				response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
@@ -344,6 +359,10 @@ public class ManagerServlet extends HttpServlet{
 				String param = request.getParameter("param");
 				if(StringUtils.isNotEmpty(param)){
 					taskDefine.setParams(param);
+				}
+				String extKeySuffix = request.getParameter("extKeySuffix");
+				if(StringUtils.isNotEmpty(extKeySuffix)){
+					taskDefine.setExtKeySuffix(extKeySuffix);
 				}
 				if(StringUtils.isNotEmpty(cronExpression) || StringUtils.isNotEmpty(period)){
 					ConsoleManager.addScheduleTask(taskDefine);
@@ -377,7 +396,7 @@ public class ManagerServlet extends HttpServlet{
 		    			sbTask.append("<tr class=\"info\">")
 		    			  .append("<td>").append(i+1).append("</td>")
 		    			  .append("<td>").append(taskDefine.getTargetBean()).append("</td>")
-		    			  .append("<td>").append(taskDefine.getTargetMethod()).append("</td>")
+		    			  .append("<td>").append(taskDefine.getTargetMethod4Show()).append("</td>")
 		    			  .append("<td>").append(taskDefine.getType()).append("</td>")
 		    			  .append("<td>").append(taskDefine.getCronExpression()).append("</td>")
 		    			  .append("<td>").append(taskDefine.getStartTime()).append("</td>")
@@ -397,22 +416,31 @@ public class ManagerServlet extends HttpServlet{
 			  				 .append("/uncode/schedule?start=")
 			                 .append(taskDefine.getTargetBean())
 			                 .append("_")
-			                 .append(taskDefine.getTargetMethod())
-			                 .append("\" style=\"color:green\">运行</a>");
+			                 .append(taskDefine.getTargetMethod());
+		    				if(StringUtils.isNotBlank(taskDefine.getExtKeySuffix())){
+		    					sbTask.append("_").append(taskDefine.getExtKeySuffix());
+		    				}
+		    				sbTask.append("\" style=\"color:green\">运行</a>");
 		    			}else{
 		    				sbTask.append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
 			  				 .append("/uncode/schedule?stop=")
 			                 .append(taskDefine.getTargetBean())
 			                 .append("_")
-			                 .append(taskDefine.getTargetMethod())
-			                 .append("\" style=\"color:red\">停止</a>");
+			                 .append(taskDefine.getTargetMethod());
+		    				if(StringUtils.isNotBlank(taskDefine.getExtKeySuffix())){
+		    					sbTask.append("_").append(taskDefine.getExtKeySuffix());
+		    				}
+		    				sbTask.append("\" style=\"color:red\">停止</a>");
 		    			}
 		    			sbTask.append(" <a href=\"").append(request.getSession().getServletContext().getContextPath())
 		    			  				 .append("/uncode/schedule?del=")
 		    			                 .append(taskDefine.getTargetBean())
 		    			                 .append("_")
-		    			                 .append(taskDefine.getTargetMethod())
-		    			                 .append("\" >删除</a>")
+		    			                 .append(taskDefine.getTargetMethod());
+		    			if(StringUtils.isNotBlank(taskDefine.getExtKeySuffix())){
+	    					sbTask.append("_").append(taskDefine.getExtKeySuffix());
+	    				}
+		    			sbTask.append("\" >删除</a>")
 		    			                 .append("</td>");
 						sbTask.append("</tr>");
 		    		}

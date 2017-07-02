@@ -416,15 +416,16 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		String zkPath = this.pathTask;
 		zkPath = zkPath + "/" + taskDefine.stringKey();
 		if(this.getZooKeeper().exists(zkPath, false) == null){
-			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
-			String json = this.gson.toJson(taskDefine);
-			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
+//			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+//			String json = this.gson.toJson(taskDefine);
+//			this.getZooKeeper().setData(zkPath, json.getBytes(), -1);
 		}else{
 			byte[] data = this.getZooKeeper().getData(zkPath, null, null);
 			TaskDefine tmpTaskDefine = null;
 			if (null != data) {
 				 String json = new String(data);
 				 tmpTaskDefine = this.gson.fromJson(json, TaskDefine.class);
+				 tmpTaskDefine.valueOf(tmpTaskDefine);
 			}else{
 				tmpTaskDefine = new TaskDefine();
 			}
@@ -510,7 +511,9 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						 byte[] data = this.getZooKeeper().getData(taskPath, null, null);
 						 if (null != data) {
 							 String json = new String(data);
-							 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
+							 TaskDefine td = this.gson.fromJson(json, TaskDefine.class);
+							 TaskDefine taskDefine = new TaskDefine();
+							 taskDefine.valueOf(td);
 							 if(TaskDefine.TYPE_UNCODE_TASK.equals(taskDefine.getType())){
 								 ownerTask.add(taskName);
 								 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));

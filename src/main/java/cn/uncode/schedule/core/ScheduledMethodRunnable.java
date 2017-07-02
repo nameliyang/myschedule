@@ -13,18 +13,22 @@ public class ScheduledMethodRunnable implements Runnable {
 	private final Method method;
 	
 	private final String params;
+	
+	private final String extKeySuffix;
 
 
-	public ScheduledMethodRunnable(Object target, Method method, String params) {
+	public ScheduledMethodRunnable(Object target, Method method, String params, String extKeySuffix) {
 		this.target = target;
 		this.method = method;
 		this.params = params;
+		this.extKeySuffix = extKeySuffix;
 	}
 
-	public ScheduledMethodRunnable(Object target, String methodName, String params) throws NoSuchMethodException {
+	public ScheduledMethodRunnable(Object target, String methodName, String params, String extKeySuffix) throws NoSuchMethodException {
 		this.target = target;
 		this.method = target.getClass().getMethod(methodName);
 		this.params = params;
+		this.extKeySuffix = extKeySuffix;
 	}
 
 
@@ -38,6 +42,10 @@ public class ScheduledMethodRunnable implements Runnable {
 	
 	public String getParams() {
 		return params;
+	}
+
+	public String getExtKeySuffix() {
+		return extKeySuffix;
 	}
 
 	@Override
