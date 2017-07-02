@@ -12,6 +12,7 @@
 5. 支持动态添加、修改和删除任务，支持任务暂停和重新启动。
 6. 添加ip黑名单，过滤不需要执行任务的节点。
 7. 后台管理和任务执行监控。
+8. 支持spring-boot,支持单个任务运行多个实例（使用扩展后缀）。
 
 
 说明：
@@ -84,6 +85,37 @@ ConsoleManager.updateScheduleTask(TaskDefine taskDefine);
 ConsoleManager.queryScheduleTask();
 
 ------------------------------------------------------------------------
+
+# 基于Spring Boot的配置
+
+1 application.properties
+
+	uncode.schedule.zkConnect=127.0.0.1:2181
+	uncode.schedule.rootPath=/uncode/schedule
+	uncode.schedule.zkSessionTimeout=60000
+	uncode.schedule.zkUsername=ScheduleAdmin
+	uncode.schedule.zkPassword=password
+	uncode.schedule.ipBlackList[0]=127.0.0.2 #可选
+	uncode.schedule.ipBlackList[1]=127.0.0.3 #可选
+	
+	uncode.schedule.quartzBean[0]=simpleTask  #可选
+	uncode.schedule.quartzMethod[0]=print1    #可选
+	uncode.schedule.quartzCronExpression[0]=0/3 * * * * ? #可选
+	uncode.schedule.quartzBean[1]=simpleTask2 #可选
+	uncode.schedule.quartzMethod[1]=print12   #可选
+	uncode.schedule.quartzCronExpression[1]=0/5 * * * * ? #可选
+	
+2 启动类
+
+	@SpringBootApplication
+	@ComponentScan({"cn.uncode.schedule"})
+	@EnableScheduling
+	@ServletComponentScan
+	public class UncodeScheduleApplication {
+		public static void main(String[] agrs){
+			SpringApplication.run(UncodeScheduleApplication.class,agrs);
+		}
+	}
 
 # 基于Spring Task的XML配置
 
@@ -221,7 +253,13 @@ ConsoleManager.queryScheduleTask();
 	</bean>
 
 ------------------------------------------------------------------------	
-	
+
+# uncode-schedule示例
+
+1 以main方法运行，类路径：cn.uncode.schedule.UncodeScheduleApplication
+
+2 在文件目录下执行：mvn spring-boot:run
+
 # uncode-schedule管理后台
 
 访问URL：项目名称/uncode/schedule，如果servlet3.x以下，请手动配置web.xml文件
