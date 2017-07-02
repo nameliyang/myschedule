@@ -45,6 +45,37 @@
 			System.out.println("=========== end !=========");
 		}
 	}
+	
+## 基于Spring Boot的配置
+
+1 application.properties
+
+	uncode.schedule.zkConnect=127.0.0.1:2181
+	uncode.schedule.rootPath=/uncode/schedule
+	uncode.schedule.zkSessionTimeout=60000
+	uncode.schedule.zkUsername=ScheduleAdmin
+	uncode.schedule.zkPassword=password
+	uncode.schedule.ipBlackList[0]=127.0.0.2 #可选
+	uncode.schedule.ipBlackList[1]=127.0.0.3 #可选
+	
+	uncode.schedule.quartzBean[0]=simpleTask  #可选
+	uncode.schedule.quartzMethod[0]=print1    #可选
+	uncode.schedule.quartzCronExpression[0]=0/3 * * * * ? #可选
+	uncode.schedule.quartzBean[1]=simpleTask2 #可选
+	uncode.schedule.quartzMethod[1]=print12   #可选
+	uncode.schedule.quartzCronExpression[1]=0/5 * * * * ? #可选
+	
+2 启动类
+
+	@SpringBootApplication
+	@ComponentScan({"cn.uncode.schedule"})
+	@EnableScheduling
+	@ServletComponentScan
+	public class UncodeScheduleApplication {
+		public static void main(String[] agrs){
+			SpringApplication.run(UncodeScheduleApplication.class,agrs);
+		}
+	}
 
 ## xml配置
 
@@ -86,36 +117,6 @@ ConsoleManager.queryScheduleTask();
 
 ------------------------------------------------------------------------
 
-# 基于Spring Boot的配置
-
-1 application.properties
-
-	uncode.schedule.zkConnect=127.0.0.1:2181
-	uncode.schedule.rootPath=/uncode/schedule
-	uncode.schedule.zkSessionTimeout=60000
-	uncode.schedule.zkUsername=ScheduleAdmin
-	uncode.schedule.zkPassword=password
-	uncode.schedule.ipBlackList[0]=127.0.0.2 #可选
-	uncode.schedule.ipBlackList[1]=127.0.0.3 #可选
-	
-	uncode.schedule.quartzBean[0]=simpleTask  #可选
-	uncode.schedule.quartzMethod[0]=print1    #可选
-	uncode.schedule.quartzCronExpression[0]=0/3 * * * * ? #可选
-	uncode.schedule.quartzBean[1]=simpleTask2 #可选
-	uncode.schedule.quartzMethod[1]=print12   #可选
-	uncode.schedule.quartzCronExpression[1]=0/5 * * * * ? #可选
-	
-2 启动类
-
-	@SpringBootApplication
-	@ComponentScan({"cn.uncode.schedule"})
-	@EnableScheduling
-	@ServletComponentScan
-	public class UncodeScheduleApplication {
-		public static void main(String[] agrs){
-			SpringApplication.run(UncodeScheduleApplication.class,agrs);
-		}
-	}
 
 # 基于Spring Task的XML配置
 
