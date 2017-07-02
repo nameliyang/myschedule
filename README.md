@@ -105,7 +105,7 @@ ConsoleManager.addScheduleTask(TaskDefine taskDefine);
 
 2 动态删除任务
 
-ConsoleManager.delScheduleTask(String targetBean, String targetMethod);
+ConsoleManager.delScheduleTask(TaskDefine taskDefine);
 
 3 动态更新任务
 
