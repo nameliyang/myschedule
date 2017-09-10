@@ -14,32 +14,6 @@
   <version>1.0.3</version>
   <packaging>jar</packaging>
 
-  <name>uncode-schedule</name>
-  <description>Job scheduler.</description>
-  <url>https://git.oschina.net/uncode/uncode-schedule</url>
-  
-  	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-		</license>
-	</licenses>
-	
-	<developers>
-		<developer>
-			<name>yeweijun</name>
-			<email>ywj_316@qq.com</email>
-			<url>http://www.uncode.cn</url>
-			<timezone>+8</timezone>
-		</developer>
-	</developers>
-	
-	<scm>
-		<connection>scm:git:git@git.oschina.net:uncode/uncode-schedule.git</connection>
-		<developerConnection>scm:git:git@git.oschina.net:uncode/uncode-schedule.git</developerConnection>
-		<url>git@git.oschina.net:uncode/uncode-schedule.git</url>
-	</scm>
-
   <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -121,18 +95,6 @@
 		
 
 	</dependencies>
-	
-	
-	<distributionManagement>
-	  	<snapshotRepository>
-	   		<id>uncode</id>
-	    	<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-	  	</snapshotRepository>
-	  	<repository>
-	    	<id>uncode</id>
-	    	<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-	  	</repository>
-	</distributionManagement>
 
 	<build>
 		<plugins>
@@ -249,16 +211,6 @@
                     </plugin>
                 </plugins>
             </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>uncode</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>uncode</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 </project>
