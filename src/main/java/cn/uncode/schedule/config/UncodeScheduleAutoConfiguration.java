@@ -19,7 +19,6 @@ import cn.uncode.schedule.ZKScheduleManager;
 import cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean;
 
 /**
- * Created by KevinBlandy on 2017/2/28 14:11
  */
 @Configuration
 @EnableConfigurationProperties({UncodeScheduleConfig.class})

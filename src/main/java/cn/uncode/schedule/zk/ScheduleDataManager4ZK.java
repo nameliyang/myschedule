@@ -37,7 +37,6 @@ import cn.uncode.schedule.core.TaskDefine;
 /**
  * zk实现类
  * 
- * @author juny.ye
  *
  */
 public class ScheduleDataManager4ZK implements IScheduleDataManager {

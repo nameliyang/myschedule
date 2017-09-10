@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 任务定义，提供关键信息给使用者
- * @author juny.ye
  *
  */
 public class TaskDefine {

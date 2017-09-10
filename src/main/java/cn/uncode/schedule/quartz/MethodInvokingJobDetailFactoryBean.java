@@ -200,7 +200,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		return ClassUtils.forName(className, this.beanClassLoader);
 	}
 
-
+	@Override
 	public void afterPropertiesSet() throws ClassNotFoundException, NoSuchMethodException {
 		prepare();
 
@@ -322,6 +322,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		 */
 		@Override
 		protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+			
 				TaskDefine taskDefine = new TaskDefine();
 				MethodInvokingJob methodInvokingJob = (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean.MethodInvokingJob) context.getJobInstance();
 				cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean methodInvokingJobDetailFactoryBean= (cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean)methodInvokingJob.methodInvoker;

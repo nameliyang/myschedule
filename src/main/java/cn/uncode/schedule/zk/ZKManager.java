@@ -23,10 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import cn.uncode.schedule.core.Version;
 
-
 /**
  * 
- * @author juny.ye
  *
  */
 public class ZKManager{
@@ -76,8 +74,7 @@ public class ZKManager{
                 + ":"+ this.properties.getProperty(keys.password.toString());
         zk.addAuthInfo("digest", authString.getBytes());
         acl.clear();
-        acl.add(new ACL(ZooDefs.Perms.ALL, new Id("digest",
-                DigestAuthenticationProvider.generateDigest(authString))));
+        acl.add(new ACL(ZooDefs.Perms.ALL, new Id("digest",DigestAuthenticationProvider.generateDigest(authString))));
         acl.add(new ACL(ZooDefs.Perms.READ, Ids.ANYONE_ID_UNSAFE));
     }
     
