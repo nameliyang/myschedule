@@ -9,7 +9,6 @@ import cn.uncode.schedule.util.ScheduleUtil;
 /**
  * 调度服务器信息定义
  * 
- * @author juny.ye
  *
  */
 public class ScheduleServer {

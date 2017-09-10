@@ -32,7 +32,7 @@ import cn.uncode.schedule.zk.ZKManager;
 /**
  * 调度器核心管理
  * 
- * @author juny.ye
+ *  
  * 
  */
 public class ZKScheduleManager extends ThreadPoolTaskScheduler implements ApplicationContextAware {
