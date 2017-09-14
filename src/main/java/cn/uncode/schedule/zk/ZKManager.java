@@ -124,7 +124,11 @@ public class ZKManager{
     public boolean checkZookeeperState() throws Exception{
         return zk != null && zk.getState() == States.CONNECTED;
     }
-
+    
+   /**
+    * 检查rootpath 若不存在  创建该路径  若存在 检查版本信息
+    * @throws Exception
+    */
     public void initial() throws Exception {
         //当zk状态正常后才能调用
         checkParent(zk,this.getRootPath());

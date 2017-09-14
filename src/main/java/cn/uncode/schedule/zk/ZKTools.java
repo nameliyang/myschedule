@@ -14,7 +14,6 @@ import org.apache.zookeeper.data.Stat;
 /**
  * zk工具类
  * 
- * @author juny.ye
  *
  */
 public class ZKTools {

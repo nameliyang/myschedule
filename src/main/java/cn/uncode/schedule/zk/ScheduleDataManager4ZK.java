@@ -59,7 +59,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		this.pathServer = this.zkManager.getRootPath() +"/" + NODE_SERVER;
 		this.pathTask = this.zkManager.getRootPath() +"/" + NODE_TASK;
 		this.random = new Random();
-		if (this.getZooKeeper().exists(this.pathServer, false) == null) {
+		if (getZooKeeper().exists(this.pathServer, false) == null) {
 			ZKTools.createPath(getZooKeeper(),this.pathServer, CreateMode.PERSISTENT, this.zkManager.getAcl());
 		}
 		loclaBaseTime = System.currentTimeMillis();

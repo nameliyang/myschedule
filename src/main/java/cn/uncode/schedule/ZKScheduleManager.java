@@ -113,9 +113,9 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			if (this.zkManager != null) {
 				this.zkManager.close();
 			}
-			this.zkManager = new ZKManager(p);
-			this.errorMessage = "Zookeeper connecting ......"
-					+ this.zkManager.getConnectStr();
+			this.zkManager = new ZKManager(p);       //zkconnect...
+			this.errorMessage = "Zookeeper connecting ......"+ this.zkManager.getConnectStr();
+			//启动初始化线程
 			initialThread = new InitialThread(this);
 			initialThread.setName("ScheduleManager-initialThread");
 			initialThread.start();
@@ -232,7 +232,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	 * @throws Exception
 	 */
 	public void initialData() throws Exception {
-		this.zkManager.initial();
+		this.zkManager.initial();   
 		this.scheduleDataManager = new ScheduleDataManager4ZK(this.zkManager);
 		checkScheduleDataManager();
 		if (this.start) {
