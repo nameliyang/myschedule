@@ -11,11 +11,13 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
+import cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean;
+
 public class Test {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		MyZkCilent client = new MyZkCilent("127.0.0.1:2181");
 		client.connnect();
-		
+		MethodInvokingJobDetailFactoryBean t;
 		client.create("/test");
 	}
 }
