@@ -19,7 +19,7 @@ import cn.uncode.schedule.core.TaskDefine;
 
 
 @WebServlet(name="schedule",urlPatterns="/uncode/schedule")
-public class ManagerServlet extends HttpServlet{
+public class ManagerServlet extends HttpServlet{  
 
 	/**
 	 * 
