@@ -52,7 +52,7 @@ import org.springframework.web.context.ContextLoader;
 import cn.uncode.schedule.ConsoleManager;
 import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.util.ScheduleUtil;
-
+ 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} that exposes a
  * {@link org.quartz.JobDetail} object which delegates job execution to a
