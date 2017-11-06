@@ -1,0 +1,40 @@
+public class Test {
+
+    public static void main(String[] args) throws Exception {
+        for(int i = 0;i<100;i++){
+            new Thread(){
+                @Override
+                public void run() {
+                    for(int i = 0;i<200;i++ ){
+                        try {
+                            inc();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+        }
+
+    }
+    public static void inc(   ) throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        System.out.println("Connecting to database...");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test", "root", "liyang");
+        String sql = "select nextval(\"TestSeq\")";
+        PreparedStatement ptmt = null;
+        ResultSet rs = null;
+        try {
+            ptmt = conn.prepareStatement(sql);
+            rs = ptmt.executeQuery();
+            int count = 0;
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+    }
+}
